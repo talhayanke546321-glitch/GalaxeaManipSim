@@ -9,6 +9,7 @@ It is useful when the full checkpoint cannot fit in the available host memory.
 from __future__ import annotations
 
 import argparse
+import os
 from pathlib import Path
 
 import numpy as np
@@ -25,8 +26,11 @@ from openpi_client import base_policy
 
 
 DEFAULT_STATS = Path(
-    "/home/vipuser/robotics/openpi-data/openpi-assets/checkpoints/"
-    "pi05_base/assets/ur5e_dual"
+    os.environ.get(
+        "GALAXEA_UR5E_DUAL_STATS",
+        "/home/vipuser/robotics/openpi-data/openpi-assets/checkpoints/"
+        "pi05_base/assets/ur5e_dual",
+    )
 )
 
 
