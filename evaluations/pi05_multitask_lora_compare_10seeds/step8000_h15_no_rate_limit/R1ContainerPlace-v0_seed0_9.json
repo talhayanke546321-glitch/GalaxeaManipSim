@@ -1,0 +1,441 @@
+{
+  "env_name": "R1ContainerPlace-v0",
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "episodes": 10,
+  "completed_episodes": 10,
+  "success_count": 8,
+  "success_rate_percent": 80.0,
+  "collision_episode_count": 1,
+  "collision_rate_percent": 10.0,
+  "collision_event_count": 2,
+  "out_of_bounds_count": 40,
+  "out_of_bounds_episode_count": 3,
+  "failure_reason_counts": {
+    "success": 8,
+    "joint_limit_clipping": 1,
+    "collision": 1
+  },
+  "average_duration_seconds": 9.333333333333332,
+  "average_episode_steps": 140.0,
+  "max_episode_steps": 200,
+  "control_freq": 15,
+  "execute_horizon": 15,
+  "rate_limit_enabled": false,
+  "max_joint_delta": null,
+  "max_gripper_delta": null,
+  "metric_definitions": {
+    "success": "final task info['success'] is true",
+    "collision": "an episode has an unexpected robot contact with table/wall/ground; bottle contact and wheel-ground contact are excluded",
+    "out_of_bounds_count": "number of control steps whose action was clipped by the joint/gripper safety bounds",
+    "failure_reason": "one per-seed primary reason; success, safety_rejection, collision, joint_limit_clipping, task-specific lift failure, timeout, or missing task info",
+    "duration": "episode_steps / control_freq; simulation time, not wall-clock inference time"
+  },
+  "episodes_detail": [
+    {
+      "seed": 0,
+      "success": true,
+      "episode_steps": 121,
+      "duration_seconds": 8.066666666666666,
+      "timed_out": false,
+      "failure_reason": "success",
+      "collision": false,
+      "collision_event_count": 0,
+      "collision_contact_steps": 0,
+      "collision_pairs": [],
+      "out_of_bounds_count": 0,
+      "rate_limited_count": 66,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "init_plate_pose": [
+          0.6499999761581421,
+          0.0,
+          0.9129999876022339,
+          0.5,
+          0.5,
+          0.5,
+          0.5
+        ],
+        "init_container_pose": [
+          0.6656380891799927,
+          0.2350638061761856,
+          0.9335235357284546,
+          0.49984902143478394,
+          0.49984902143478394,
+          0.49984902143478394,
+          0.49984902143478394
+        ],
+        "container_id": 8
+      },
+      "task_info": {
+        "success": true
+      }
+    },
+    {
+      "seed": 1,
+      "success": true,
+      "episode_steps": 124,
+      "duration_seconds": 8.266666666666667,
+      "timed_out": false,
+      "failure_reason": "success",
+      "collision": false,
+      "collision_event_count": 0,
+      "collision_contact_steps": 0,
+      "collision_pairs": [],
+      "out_of_bounds_count": 0,
+      "rate_limited_count": 65,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "init_plate_pose": [
+          0.6499999761581421,
+          0.0,
+          0.9129999876022339,
+          0.5,
+          0.5,
+          0.5,
+          0.5
+        ],
+        "init_container_pose": [
+          0.6453498601913452,
+          -0.21194647252559662,
+          0.9335235357284546,
+          0.49984902143478394,
+          0.49984902143478394,
+          0.49984902143478394,
+          0.49984902143478394
+        ],
+        "container_id": 8
+      },
+      "task_info": {
+        "success": true
+      }
+    },
+    {
+      "seed": 2,
+      "success": false,
+      "episode_steps": 200,
+      "duration_seconds": 13.333333333333334,
+      "timed_out": true,
+      "failure_reason": "joint_limit_clipping",
+      "collision": false,
+      "collision_event_count": 0,
+      "collision_contact_steps": 0,
+      "collision_pairs": [],
+      "out_of_bounds_count": 28,
+      "rate_limited_count": 79,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "init_plate_pose": [
+          0.6499999761581421,
+          0.0,
+          0.9129999876022339,
+          0.5,
+          0.5,
+          0.5,
+          0.5
+        ],
+        "init_container_pose": [
+          0.6653992533683777,
+          -0.28444427251815796,
+          0.9335235357284546,
+          0.49984902143478394,
+          0.49984902143478394,
+          0.49984902143478394,
+          0.49984902143478394
+        ],
+        "container_id": 8
+      },
+      "task_info": {
+        "success": false
+      }
+    },
+    {
+      "seed": 3,
+      "success": true,
+      "episode_steps": 119,
+      "duration_seconds": 7.933333333333334,
+      "timed_out": false,
+      "failure_reason": "success",
+      "collision": false,
+      "collision_event_count": 0,
+      "collision_contact_steps": 0,
+      "collision_pairs": [],
+      "out_of_bounds_count": 6,
+      "rate_limited_count": 75,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "init_plate_pose": [
+          0.6499999761581421,
+          0.0,
+          0.9129999876022339,
+          0.5,
+          0.5,
+          0.5,
+          0.5
+        ],
+        "init_container_pose": [
+          0.6766241192817688,
+          0.2357681691646576,
+          0.9400171637535095,
+          0.49984902143478394,
+          0.49984902143478394,
+          0.49984902143478394,
+          0.49984902143478394
+        ],
+        "container_id": 9
+      },
+      "task_info": {
+        "success": true
+      }
+    },
+    {
+      "seed": 4,
+      "success": false,
+      "episode_steps": 200,
+      "duration_seconds": 13.333333333333334,
+      "timed_out": true,
+      "failure_reason": "collision",
+      "collision": true,
+      "collision_event_count": 2,
+      "collision_contact_steps": 12,
+      "collision_pairs": [
+        [
+          "right_gripper_finger_link2",
+          "table"
+        ]
+      ],
+      "out_of_bounds_count": 6,
+      "rate_limited_count": 49,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "init_plate_pose": [
+          0.6499999761581421,
+          0.0,
+          0.9129999876022339,
+          0.5,
+          0.5,
+          0.5,
+          0.5
+        ],
+        "init_container_pose": [
+          0.7464411854743958,
+          -0.29626184701919556,
+          0.9335235357284546,
+          0.49984902143478394,
+          0.49984902143478394,
+          0.49984902143478394,
+          0.49984902143478394
+        ],
+        "container_id": 8
+      },
+      "task_info": {
+        "success": false
+      }
+    },
+    {
+      "seed": 5,
+      "success": true,
+      "episode_steps": 122,
+      "duration_seconds": 8.133333333333333,
+      "timed_out": false,
+      "failure_reason": "success",
+      "collision": false,
+      "collision_event_count": 0,
+      "collision_contact_steps": 0,
+      "collision_pairs": [],
+      "out_of_bounds_count": 0,
+      "rate_limited_count": 66,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "init_plate_pose": [
+          0.6499999761581421,
+          0.0,
+          0.9129999876022339,
+          0.5,
+          0.5,
+          0.5,
+          0.5
+        ],
+        "init_container_pose": [
+          0.6332989931106567,
+          0.22243937849998474,
+          0.9335235357284546,
+          0.49984902143478394,
+          0.49984902143478394,
+          0.49984902143478394,
+          0.49984902143478394
+        ],
+        "container_id": 8
+      },
+      "task_info": {
+        "success": true
+      }
+    },
+    {
+      "seed": 6,
+      "success": true,
+      "episode_steps": 125,
+      "duration_seconds": 8.333333333333334,
+      "timed_out": false,
+      "failure_reason": "success",
+      "collision": false,
+      "collision_event_count": 0,
+      "collision_contact_steps": 0,
+      "collision_pairs": [],
+      "out_of_bounds_count": 0,
+      "rate_limited_count": 77,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "init_plate_pose": [
+          0.6499999761581421,
+          0.0,
+          0.9129999876022339,
+          0.5,
+          0.5,
+          0.5,
+          0.5
+        ],
+        "init_container_pose": [
+          0.606254518032074,
+          -0.23540599644184113,
+          0.9400171637535095,
+          0.49984902143478394,
+          0.49984902143478394,
+          0.49984902143478394,
+          0.49984902143478394
+        ],
+        "container_id": 9
+      },
+      "task_info": {
+        "success": true
+      }
+    },
+    {
+      "seed": 7,
+      "success": true,
+      "episode_steps": 120,
+      "duration_seconds": 8.0,
+      "timed_out": false,
+      "failure_reason": "success",
+      "collision": false,
+      "collision_event_count": 0,
+      "collision_contact_steps": 0,
+      "collision_pairs": [],
+      "out_of_bounds_count": 0,
+      "rate_limited_count": 57,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "init_plate_pose": [
+          0.6499999761581421,
+          0.0,
+          0.9129999876022339,
+          0.5,
+          0.5,
+          0.5,
+          0.5
+        ],
+        "init_container_pose": [
+          0.6114462614059448,
+          0.16795127093791962,
+          0.9400171637535095,
+          0.49984902143478394,
+          0.49984902143478394,
+          0.49984902143478394,
+          0.49984902143478394
+        ],
+        "container_id": 9
+      },
+      "task_info": {
+        "success": true
+      }
+    },
+    {
+      "seed": 8,
+      "success": true,
+      "episode_steps": 122,
+      "duration_seconds": 8.133333333333333,
+      "timed_out": false,
+      "failure_reason": "success",
+      "collision": false,
+      "collision_event_count": 0,
+      "collision_contact_steps": 0,
+      "collision_pairs": [],
+      "out_of_bounds_count": 0,
+      "rate_limited_count": 72,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "init_plate_pose": [
+          0.6499999761581421,
+          0.0,
+          0.9129999876022339,
+          0.5,
+          0.5,
+          0.5,
+          0.5
+        ],
+        "init_container_pose": [
+          0.7310144305229187,
+          0.28112438321113586,
+          0.9335235357284546,
+          0.49984902143478394,
+          0.49984902143478394,
+          0.49984902143478394,
+          0.49984902143478394
+        ],
+        "container_id": 8
+      },
+      "task_info": {
+        "success": true
+      }
+    },
+    {
+      "seed": 9,
+      "success": true,
+      "episode_steps": 147,
+      "duration_seconds": 9.8,
+      "timed_out": false,
+      "failure_reason": "success",
+      "collision": false,
+      "collision_event_count": 0,
+      "collision_contact_steps": 0,
+      "collision_pairs": [],
+      "out_of_bounds_count": 0,
+      "rate_limited_count": 84,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "init_plate_pose": [
+          0.6499999761581421,
+          0.0,
+          0.9129999876022339,
+          0.5,
+          0.5,
+          0.5,
+          0.5
+        ],
+        "init_container_pose": [
+          0.620074450969696,
+          -0.21473334729671478,
+          0.9400171637535095,
+          0.49984902143478394,
+          0.49984902143478394,
+          0.49984902143478394,
+          0.49984902143478394
+        ],
+        "container_id": 9
+      },
+      "task_info": {
+        "success": true
+      }
+    }
+  ]
+}

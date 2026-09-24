@@ -21,6 +21,7 @@ dependencies = [
     "trimesh",
     "h5py",
     "imageio",
+    "pillow",
     "transforms3d",
     "torch",
     "pytorch_kinematics_ms",

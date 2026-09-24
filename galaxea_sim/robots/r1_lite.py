@@ -35,7 +35,11 @@ class R1LiteRobot(BimanualRobot):
         right_ee_link_name: str = "right_gripper_link",
         left_relaxed_ik_setting_path: str = "r1_lite/configs/settings_left.yaml",
         right_relaxed_ik_setting_path: str = "r1_lite/configs/settings_right.yaml",
+        camera_resolution_scale: int = 4,
     ):
+        if camera_resolution_scale <= 0:
+            raise ValueError("camera_resolution_scale must be positive")
+        self.camera_resolution_scale = camera_resolution_scale
         super().__init__(
             scene,
             urdf_path,
@@ -66,8 +70,8 @@ class R1LiteRobot(BimanualRobot):
             scene=self._scene,
             mount=get_link_by_name(self.links, "camera_head_left_link").entity,
             name="head",
-            width=1280,
-            height=720, 
+            width=320 * self.camera_resolution_scale,
+            height=180 * self.camera_resolution_scale,
             local_pose=sapien.Pose([0, 0, 0], np.array([1, 1, -1, 1]) / 2),
         )
         self.head_camera.set_fovx(np.deg2rad(106.09))

@@ -1,3 +1,11 @@
+"""双臂机器人抽象。
+
+本层把 SAPIEN 的 articulation 细节整理成环境和控制器需要的接口：
+关节索引、末端执行器、控制坐标系、相机列表以及 qpos/qvel/qf 读写。
+具体机器人型号（R1、R1 Pro、R1 Lite）只需要提供各自的 URDF、关节命名
+和传感器挂载方式。
+"""
+
 import numpy as np
 import sapien
 import yaml
@@ -10,6 +18,8 @@ from galaxea_sim.utils.sapien_utils import get_joint_indices_by_key, get_link_by
 from .base import BaseRobot
 
 class BimanualRobot(BaseRobot):
+    """加载一个具有左右机械臂和左右夹爪的 SAPIEN articulation。"""
+
     name: str = "bimanual_robot"
     def __init__(
         self, 
@@ -33,6 +43,12 @@ class BimanualRobot(BaseRobot):
         left_relaxed_ik_setting_path: Optional[str] = None,
         right_relaxed_ik_setting_path: Optional[str] = None,
     ):
+        """保存机器人配置并加载 URDF。
+
+        ``*_joint_key`` 不是单个关节名称，而是用于从 active joints 中
+        筛选一组关节的关键字。加载完成后，环境通过这些索引把 14 维
+        R1 动作映射到 SAPIEN 的完整 DoF 向量。
+        """
         super().__init__(
             scene,
             urdf_path,
@@ -58,6 +74,7 @@ class BimanualRobot(BaseRobot):
         self._load_robot()
         
     def _sync_relaxed_ik_config(self):
+        """读取 Relaxed IK 配置并同步末端/控制坐标系名称。"""
         if self.left_relaxed_ik_setting_path is not None:
             with open(ASSETS_DIR / self.left_relaxed_ik_setting_path, "r") as f:
                 self.left_relaxed_ik_config = yaml.safe_load(f)
@@ -74,6 +91,7 @@ class BimanualRobot(BaseRobot):
         logger.debug(f"Right control frame name: {self.right_control_frame_name}")
     
     def _load_robot(self):
+        """从资产目录加载 URDF 并建立所有关节、连杆和传感器索引。"""
         loader = self._scene.create_urdf_loader()
         loader.fix_root_link = True
         self.robot: sapien.pysapien.physx.PhysxArticulation = loader.load(
@@ -90,6 +108,8 @@ class BimanualRobot(BaseRobot):
         else:
             self.init_qpos = self.init_qpos
         logger.debug(f"Initial qpos: {self.init_qpos}")
+        # 先把机器人放到任务指定的初始姿态；环境 reset 时还会再次设置
+        # qpos/qvel/qf，确保每个 episode 不继承上一个 episode 的动力学状态。
         self.robot.set_qpos(self.init_qpos)
         self.active_joints = self.robot.get_active_joints()
         self.active_joint_names = [joint.get_name() for joint in self.active_joints]
@@ -130,6 +150,7 @@ class BimanualRobot(BaseRobot):
         self._add_sensors()
 
     def _set_touch_links_material(self):
+        """给夹爪接触连杆设置摩擦材料，改善抓取稳定性。"""
         for link in self.touch_links:
             for component in link.entity.components:
                 if isinstance(component, sapien.pysapien.physx.PhysxArticulationLinkComponent):
@@ -139,51 +160,69 @@ class BimanualRobot(BaseRobot):
                         )
                         
     def _add_sensors(self):
+        """由具体机器人型号挂载相机或其它传感器。"""
         pass
     
     def get_qpos(self):
+        """读取 articulation 的全部关节位置。"""
         return self.robot.get_qpos()
     
     def set_qpos(self, qpos):
+        """设置 articulation 的全部关节位置。"""
         self.robot.set_qpos(qpos)
         
     def get_pose(self):
+        """读取机器人根部位姿。"""
         return self.robot.get_root_pose()
     
     def get_qvel(self):
+        """读取 articulation 的全部关节速度。"""
         return self.robot.get_qvel()
+
+    def set_qvel(self, qvel):
+        """设置 articulation 的全部关节速度。"""
+        self.robot.set_qvel(qvel)
     
     def compute_passive_force(self, gravity: bool = True, coriolis_and_centrifugal: bool = True):
+        """计算重力、科氏力和离心力等被动力。"""
         return self.robot.compute_passive_force(gravity, coriolis_and_centrifugal)
         
     def set_qf(self, qf):
+        """向 articulation 写入关节力。"""
         self.robot.set_qf(qf)
         
     @property
     def left_ee_pose_wrt_control_frame(self):
+        """返回左末端相对于左控制坐标系的位姿。"""
         return self.left_control_frame_link.get_entity_pose().inv() * self.left_ee_link.get_entity_pose()
     
     @property
     def right_ee_pose_wrt_control_frame(self):
+        """返回右末端相对于右控制坐标系的位姿。"""
         return self.right_control_frame_link.get_entity_pose().inv() * self.right_ee_link.get_entity_pose()
     
     
     @property
     def cameras(self):
+        """返回机器人挂载的策略相机；基础双臂机器人默认没有相机。"""
         return []
     
     @property
     def articulation(self):
+        """暴露底层 SAPIEN articulation，供碰撞/调试代码使用。"""
         return self.robot
     
     @property
     def left_ee_rpy_offset(self):
+        """左末端在任务坐标系中的 RPY 补偿。"""
         return np.array([0, 0, 0])
     
     @property
     def right_ee_rpy_offset(self):
+        """右末端在任务坐标系中的 RPY 补偿。"""
         return np.array([0, 0, 0])
     
     @property
     def gripper_finger_sign(self):
+        """左右夹爪手指关节的方向符号。"""
         return [1, 1]

@@ -71,69 +71,90 @@ mv robotwin_models galaxea_sim/assets/
 
 | Robots   | Example Tasks (`Env-Name`)     |  Supported Controllers      |
 |---------|------------------------------|-------------------------------------------------------------|
-| **R1**      | `R1DualBottlesPickEasy`   | `bimanual_joint_position` / `bimanual_relaxed_ik`           |
-| **R1 Pro**  | `R1ProBlocksStackEasy`    | `bimanual_joint_position` / `bimanual_relaxed_ik`           |
-| **R1 Lite** | `R1LiteBlocksStackEasy`   | `bimanual_joint_position`         |
+| **R1**      | `R1DualBottlesPickEasy-v0`   | `bimanual_joint_position` / `bimanual_relaxed_ik`           |
+| **R1 Pro**  | `R1ProBlocksStackEasy-v0`    | `bimanual_joint_position` / `bimanual_relaxed_ik`           |
+| **R1 Lite** | `R1LiteBlocksStackEasy-v0`   | `bimanual_joint_position`         |
 
 
 ### 1. Generate Raw Demos by mplib
 
 ```
 # Example of R1 Picking up Bottles
-python -m galaxea_sim.scripts.collect_demos --env-name R1DualBottlesPickEasy --num-demos 100
+python -m galaxea_sim.scripts.collect_demos --env-name R1DualBottlesPickEasy-v0 --num-demos 100
 
 # Example of R1 Pro Stacking Blocks
-python -m galaxea_sim.scripts.collect_demos --env-name R1ProBlocksStackEasy --num-demos 100
+python -m galaxea_sim.scripts.collect_demos --env-name R1ProBlocksStackEasy-v0 --num-demos 100
 
 # Example of R1 Lite Stacking Blocks:
-python -m galaxea_sim.scripts.collect_demos --env-name R1LiteBlocksStackEasy --num-demos 100
+python -m galaxea_sim.scripts.collect_demos --env-name R1LiteBlocksStackEasy-v0 --num-demos 100
 ```
 
-Note: The default `--obs_mode` is `state`, which is faster so it is recommended for eef policies that will get image observations during replay. By default, the data will be stored in `datasets/<env-name>/<data-time>` as h5 files.
+Note: The default `--obs_mode` is `state`, which is faster and is useful when
+the trajectory will be replayed to regenerate image observations. For OpenPI
+training, collect with `--obs-mode image`; the data are stored in
+`datasets/<env-name>/<tag>` as HDF5 files.
 
 ### 2. Replay Demos by Assigning Controllers
 
 
 ```
 # Example of R1 Picking up Bottles by Joints Control
-python -m galaxea_sim.scripts.replay_demos --env-name R1DualBottlesPickEasy --target_controller_type bimanual_joint_position --num-demos 100
+python -m galaxea_sim.scripts.replay_demos --env-name R1DualBottlesPickEasy-v0 --target_controller_type bimanual_joint_position --num-demos 100
 
 # Example of R1 Pro Stacking Blocks by End Effector Control
-python -m galaxea_sim.scripts.replay_demos --env-name R1ProBlocksStackEasy --target_controller_type bimanual_relaxed_ik --num-demos 100
+python -m galaxea_sim.scripts.replay_demos --env-name R1ProBlocksStackEasy-v0 --target_controller_type bimanual_relaxed_ik --num-demos 100
 
 # Example of R1 Lite Stacking Blocks by Joint Control
-python -m galaxea_sim.scripts.replay_demos --env-name R1LiteBlocksStackEasy  --target_controller_type bimanual_joint_position --num-demos 100
+python -m galaxea_sim.scripts.replay_demos --env-name R1LiteBlocksStackEasy-v0 --target_controller_type bimanual_joint_position --num-demos 100
 ```
-Note: Replay demonstrations will pass the recorded end effector's pose trajectory to the relaxed_ik controller and check if task is completed. The demos with inverse kinematics solutions will be filtered out, and image/depth observations will be saved. The output will be stored in `datasets/<env-name>/final`.
+Note: Replay demonstrations will pass the recorded end effector's pose trajectory to the relaxed_ik controller and check if task is completed. The demos with inverse kinematics solutions will be filtered out, and image/depth observations will be saved. The output will be stored in `datasets/<env-name>/replayed`.
 ## 🛠  Train Policies
 
 ### 1. Convert Demos to LeRobot Dataset
-If you want to use Galaxea Diffusion Policy implementation, just replace the script name as `convert_single_galaxea_sim_to_lerobot_opendp`. If the controller is bimanual_relaxed_ik, please add `--use_eef`.
+The original converter supports the simulator's joint and EEF/relaxed-IK
+formats. Use `--use-eef` for the latter. The OpenPI-specific converter below
+is separate and intentionally accepts only standard R1 joint-position data.
 
 ```
 # If you want to use Lerobot Diffusion Policy implementation, please use script convert_single_galaxea_sim_to_lerobot
 # For Joint Control
 # Example of R1 Picking up Bottles 
-python -m galaxea_sim.scripts.convert_single_galaxea_sim_to_lerobot --task R1DualBottlesPickEasy --tag final --robot r1
+python -m galaxea_sim.scripts.convert_single_galaxea_sim_to_lerobot --task R1DualBottlesPickEasy-v0 --tag final --robot r1
 
 # Example of R1 Pro Stacking Blocks
-python -m galaxea_sim.scripts.convert_single_galaxea_sim_to_lerobot --task R1ProBlocksStackEasy --tag final --robot r1_pro
+python -m galaxea_sim.scripts.convert_single_galaxea_sim_to_lerobot --task R1ProBlocksStackEasy-v0 --tag final --robot r1_pro
 
 # Example of R1 Lite Stacking Blocks
-python -m galaxea_sim.scripts.convert_single_galaxea_sim_to_lerobot --task R1LiteBlocksStackEasy --tag final --robot r1_lite
+python -m galaxea_sim.scripts.convert_single_galaxea_sim_to_lerobot --task R1LiteBlocksStackEasy-v0 --tag final --robot r1_lite
 
 
 # For End Effector Control
 # Example of R1 Pro Picking up Bottles 
-python -m galaxea_sim.scripts.convert_single_galaxea_sim_to_lerobot --robot r1_pro --task R1ProDualBottlesPickEasy --tag final --use_eef
+python -m galaxea_sim.scripts.convert_single_galaxea_sim_to_lerobot --robot r1_pro --task R1ProDualBottlesPickEasy-v0 --tag final --use_eef
 
 # Example of R1 Pro Stacking Blocks 
-python -m galaxea_sim.scripts.convert_single_galaxea_sim_to_lerobot --robot r1_pro --task R1ProBlocksStackEasy --tag final --use_eef
+python -m galaxea_sim.scripts.convert_single_galaxea_sim_to_lerobot --robot r1_pro --task R1ProBlocksStackEasy-v0 --tag final --use_eef
 ```
 
 Note: An optional argument `--use_video` makes lerobot storage image data by encoding them into video, which has smaller file size and can be directly played. It requires ffmpeg installed, and you may want to change vcodec to "libh264" in `.../site-packages/lerobot/common/datasets/video_utils.py` if default "libsvtav1" is not available.
 
-`--tag` determines which demos will be convert, by defult it will convert all demos in `datasets/<env-name>`. If `--use_eef` is used, the arm's observation and action will be replace by end effector's pose(x,y,z,qw,qx,qy,qz). The lerobot dataset will be generated in HF_LEROBOT_HOME, it is `~/.cache/huggingface/lerobot` if not specified.
+`--tag` determines which demos will be converted; by default it converts all demos in `datasets/<env-name>`. If `--use_eef` is used, the arm's observation and action will be replaced by end-effector poses `(x,y,z,qw,qx,qy,qz)`. The original converter writes to `HF_LEROBOT_HOME` (by default `~/.cache/huggingface/lerobot`).
+
+For OpenPI, run the following converter from the OpenPI environment so the
+dataset is written with OpenPI's pinned LeRobot package. Set
+`PYTHONPATH` if `galaxea_sim` is not installed in that environment:
+
+```bash
+export PYTHONPATH=/home/vipuser/robotics/GalaxeaManipSim:$PYTHONPATH
+python -m galaxea_sim.scripts.convert_single_galaxea_sim_to_galaxea_lerobot \
+  --task galaxea_r1_multi_asset_v1 \
+  --source-tasks R1DiverseBottlesPick-v0 R1ShoePlace-v0 \
+  --tag collected --overwrite
+```
+
+The OpenPI converter writes to `datasets/<output-task>/lerobot`, records the
+dataset contract in `meta/info.json`, and rejects HDF5 files that were not
+recorded with the current pre-action protocol.
 
 
 ### 2. Data Structure after Converting
@@ -146,7 +167,7 @@ observation.images.right_wrist_rgb: (224, 224, 3)
 observation.depth.head_depth： （224，224）
 
 # States and actions
-# For eef controller
+# For joint-position controller
 # arm_dof is 6 when using R1 and R1 Lite, is 7 when using R1 Pro
 observation.state.left_arm_joints:  (arm_dof,)
 observation.state.left_gripper:     (1,)
@@ -158,7 +179,7 @@ action.right_arm_joints:            (arm_dof,)
 action.right_gripper:               (1,)
 
 # States and actions
-# For joints controller
+# For end-effector / relaxed-IK controller
 observation.state.left_ee_pose:  (7,)
 observation.state.left_gripper:  (1,)
 observation.state.right_ee_pose: (7,)
@@ -176,13 +197,13 @@ observation.images.rgb_left_hand: (224, 224, 3)
 observation.images.rgb_right_hand: (224, 224, 3)
 
 # States and actions
-# For eef controller
+# For end-effector / relaxed-IK controller
 # arm_dof is 6 when using R1 and R1 Lite, is 7 when using R1 Pro
 observation.state:  (2*arm_dof + 2,)
 action:             (2*arm_dof + 2,)
 
 # States and actions
-# For joints controller
+# For joint-position controller
 observation.state:  (16,)
 action:             (16,)
 ```
@@ -193,13 +214,13 @@ By default, the policy will be saved in `outputs/train/<env-name>/diffusion/<dat
 
 ```
 # Example of R1 Picking up Bottles 
-python -m galaxea_sim.scripts.train_lerobot_dp_policy --task R1DualBottlesPickEasy
+python -m galaxea_sim.scripts.train_lerobot_dp_policy --task R1DualBottlesPickEasy-v0
 
 # Example of R1 Pro Stacking Blocks 
-python -m galaxea_sim.scripts.train_lerobot_dp_policy --task R1ProBlocksStackEasy
+python -m galaxea_sim.scripts.train_lerobot_dp_policy --task R1ProBlocksStackEasy-v0
 
 # Example of R1 Lite Stacking Blocks 
-python -m galaxea_sim.scripts.train_lerobot_dp_policy --task R1LiteBlocksStackEasy
+python -m galaxea_sim.scripts.train_lerobot_dp_policy --task R1LiteBlocksStackEasy-v0
 ```
 #### 3.2 Galaxea Diffusion Policy
 Please refer to Galaxea DP repository in this [link]().
@@ -208,13 +229,13 @@ Please refer to Galaxea DP repository in this [link]().
 The evaluation result will be saved in the specified checkpoint dir; use `--save-video` to save videos of the evaluation.
 ```
 # Example of R1 Picking up Bottles 
-python -m galaxea_sim.scripts.eval_lerobot_dp_policy --task R1DualBottlesPickEasy --pretrained-policy-path outputs/train/R1DualBottlesPickEasy/diffusion/.../checkpoint --target_controller_type bimanual_joint_position 
+python -m galaxea_sim.scripts.eval_lerobot_dp_policy --task R1DualBottlesPickEasy-v0 --pretrained-policy-path outputs/train/R1DualBottlesPickEasy-v0/diffusion/.../checkpoint --target_controller_type bimanual_joint_position
 
 # Example of R1 Pro Stacking Blocks
-python -m galaxea_sim.scripts.eval_lerobot_dp_policy --task R1ProBlocksStackEasy --pretrained-policy-path outputs/train/R1ProBlocksStackEasy/diffusion/.../checkpoint  --target_controller_type bimanual_joint_position
+python -m galaxea_sim.scripts.eval_lerobot_dp_policy --task R1ProBlocksStackEasy-v0 --pretrained-policy-path outputs/train/R1ProBlocksStackEasy-v0/diffusion/.../checkpoint  --target_controller_type bimanual_joint_position
 
 # Example of R1 Lite Stacking Blocks 
-python -m galaxea_sim.scripts.eval_lerobot_dp_policy --task R1LiteBlocksStackEasy --pretrained-policy-path outputs/train/R1LiteBlocksStackEasy/diffusion/.../checkpoint --target_controller_type bimanual_joint_position
+python -m galaxea_sim.scripts.eval_lerobot_dp_policy --task R1LiteBlocksStackEasy-v0 --pretrained-policy-path outputs/train/R1LiteBlocksStackEasy-v0/diffusion/.../checkpoint --target_controller_type bimanual_joint_position
 ```
 #### 3.2 Galaxea Diffusion Policy
 Please refer to Galaxea DP repository in this [link]().

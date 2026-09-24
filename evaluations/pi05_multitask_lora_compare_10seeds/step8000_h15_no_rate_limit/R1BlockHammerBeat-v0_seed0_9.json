@@ -1,0 +1,432 @@
+{
+  "env_name": "R1BlockHammerBeat-v0",
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "episodes": 10,
+  "completed_episodes": 10,
+  "success_count": 5,
+  "success_rate_percent": 50.0,
+  "collision_episode_count": 1,
+  "collision_rate_percent": 10.0,
+  "collision_event_count": 1,
+  "out_of_bounds_count": 18,
+  "out_of_bounds_episode_count": 2,
+  "failure_reason_counts": {
+    "success": 5,
+    "collision": 1,
+    "timeout": 2,
+    "joint_limit_clipping": 2
+  },
+  "average_duration_seconds": 10.86,
+  "average_episode_steps": 162.9,
+  "max_episode_steps": 200,
+  "control_freq": 15,
+  "execute_horizon": 15,
+  "rate_limit_enabled": false,
+  "max_joint_delta": null,
+  "max_gripper_delta": null,
+  "metric_definitions": {
+    "success": "final task info['success'] is true",
+    "collision": "an episode has an unexpected robot contact with table/wall/ground; bottle contact and wheel-ground contact are excluded",
+    "out_of_bounds_count": "number of control steps whose action was clipped by the joint/gripper safety bounds",
+    "failure_reason": "one per-seed primary reason; success, safety_rejection, collision, joint_limit_clipping, task-specific lift failure, timeout, or missing task info",
+    "duration": "episode_steps / control_freq; simulation time, not wall-clock inference time"
+  },
+  "episodes_detail": [
+    {
+      "seed": 0,
+      "success": true,
+      "episode_steps": 118,
+      "duration_seconds": 7.866666666666666,
+      "timed_out": false,
+      "failure_reason": "success",
+      "collision": false,
+      "collision_event_count": 0,
+      "collision_contact_steps": 0,
+      "collision_pairs": [],
+      "out_of_bounds_count": 0,
+      "rate_limited_count": 63,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "hammer_pose": [
+          0.6399999856948853,
+          0.0,
+          0.9430000185966492,
+          0.07199999690055847,
+          0.703000009059906,
+          0.703000009059906,
+          0.07500000298023224
+        ],
+        "block_pose": [
+          0.6597626805305481,
+          0.10759468376636505,
+          0.9200000166893005,
+          0.5366790890693665,
+          0.5366790890693665,
+          0.4604080319404602,
+          0.4604080319404602
+        ]
+      },
+      "task_info": {
+        "success": true
+      }
+    },
+    {
+      "seed": 1,
+      "success": true,
+      "episode_steps": 122,
+      "duration_seconds": 8.133333333333333,
+      "timed_out": false,
+      "failure_reason": "success",
+      "collision": false,
+      "collision_event_count": 0,
+      "collision_contact_steps": 0,
+      "collision_pairs": [],
+      "out_of_bounds_count": 0,
+      "rate_limited_count": 81,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "hammer_pose": [
+          0.6399999856948853,
+          0.0,
+          0.9430000185966492,
+          0.07199999690055847,
+          0.703000009059906,
+          0.703000009059906,
+          0.07500000298023224
+        ],
+        "block_pose": [
+          0.6334043741226196,
+          0.11016224324703217,
+          0.9200000166893005,
+          0.6420993804931641,
+          0.6420993804931641,
+          0.2961559593677521,
+          0.2961559593677521
+        ]
+      },
+      "task_info": {
+        "success": true
+      }
+    },
+    {
+      "seed": 2,
+      "success": true,
+      "episode_steps": 129,
+      "duration_seconds": 8.6,
+      "timed_out": false,
+      "failure_reason": "success",
+      "collision": false,
+      "collision_event_count": 0,
+      "collision_contact_steps": 0,
+      "collision_pairs": [],
+      "out_of_bounds_count": 0,
+      "rate_limited_count": 70,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "hammer_pose": [
+          0.6399999856948853,
+          0.0,
+          0.9430000185966492,
+          0.07199999690055847,
+          0.703000009059906,
+          0.703000009059906,
+          0.07500000298023224
+        ],
+        "block_pose": [
+          0.6371989846229553,
+          -0.23703688383102417,
+          0.9200000166893005,
+          0.5381895303726196,
+          0.5381895303726196,
+          0.45864149928092957,
+          0.45864149928092957
+        ]
+      },
+      "task_info": {
+        "success": true
+      }
+    },
+    {
+      "seed": 3,
+      "success": true,
+      "episode_steps": 131,
+      "duration_seconds": 8.733333333333333,
+      "timed_out": false,
+      "failure_reason": "success",
+      "collision": false,
+      "collision_event_count": 0,
+      "collision_contact_steps": 0,
+      "collision_pairs": [],
+      "out_of_bounds_count": 0,
+      "rate_limited_count": 81,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "hammer_pose": [
+          0.6399999856948853,
+          0.0,
+          0.9430000185966492,
+          0.07199999690055847,
+          0.703000009059906,
+          0.703000009059906,
+          0.07500000298023224
+        ],
+        "block_pose": [
+          0.6601595878601074,
+          0.1040739119052887,
+          0.9200000166893005,
+          0.2704361081123352,
+          0.2704361081123352,
+          0.6533485651016235,
+          0.6533485651016235
+        ]
+      },
+      "task_info": {
+        "success": true
+      }
+    },
+    {
+      "seed": 4,
+      "success": false,
+      "episode_steps": 200,
+      "duration_seconds": 13.333333333333334,
+      "timed_out": true,
+      "failure_reason": "collision",
+      "collision": true,
+      "collision_event_count": 1,
+      "collision_contact_steps": 6,
+      "collision_pairs": [
+        [
+          "right_gripper_finger_link1",
+          "table"
+        ]
+      ],
+      "out_of_bounds_count": 0,
+      "rate_limited_count": 106,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "hammer_pose": [
+          0.6399999856948853,
+          0.0,
+          0.9430000185966492,
+          0.07199999690055847,
+          0.703000009059906,
+          0.703000009059906,
+          0.07500000298023224
+        ],
+        "block_pose": [
+          0.7452548742294312,
+          -0.24688486754894257,
+          0.9200000166893005,
+          0.34273162484169006,
+          0.34273162484169006,
+          0.6184941530227661,
+          0.6184941530227661
+        ]
+      },
+      "task_info": {
+        "success": false
+      }
+    },
+    {
+      "seed": 5,
+      "success": true,
+      "episode_steps": 129,
+      "duration_seconds": 8.6,
+      "timed_out": false,
+      "failure_reason": "success",
+      "collision": false,
+      "collision_event_count": 0,
+      "collision_contact_steps": 0,
+      "collision_pairs": [],
+      "out_of_bounds_count": 0,
+      "rate_limited_count": 87,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "hammer_pose": [
+          0.6399999856948853,
+          0.0,
+          0.9430000185966492,
+          0.07199999690055847,
+          0.703000009059906,
+          0.703000009059906,
+          0.07500000298023224
+        ],
+        "block_pose": [
+          0.5943986177444458,
+          0.18536615371704102,
+          0.9200000166893005,
+          0.5057607293128967,
+          0.5057607293128967,
+          0.4941721558570862,
+          0.4941721558570862
+        ]
+      },
+      "task_info": {
+        "success": true
+      }
+    },
+    {
+      "seed": 6,
+      "success": false,
+      "episode_steps": 200,
+      "duration_seconds": 13.333333333333334,
+      "timed_out": true,
+      "failure_reason": "timeout",
+      "collision": false,
+      "collision_event_count": 0,
+      "collision_contact_steps": 0,
+      "collision_pairs": [],
+      "out_of_bounds_count": 0,
+      "rate_limited_count": 129,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "hammer_pose": [
+          0.6399999856948853,
+          0.0,
+          0.9430000185966492,
+          0.07199999690055847,
+          0.703000009059906,
+          0.703000009059906,
+          0.07500000298023224
+        ],
+        "block_pose": [
+          0.7252535223960876,
+          0.16187971830368042,
+          0.9200000166893005,
+          0.3285498321056366,
+          0.3285498321056366,
+          0.6261429786682129,
+          0.6261429786682129
+        ]
+      },
+      "task_info": {
+        "success": false
+      }
+    },
+    {
+      "seed": 7,
+      "success": false,
+      "episode_steps": 200,
+      "duration_seconds": 13.333333333333334,
+      "timed_out": true,
+      "failure_reason": "joint_limit_clipping",
+      "collision": false,
+      "collision_event_count": 0,
+      "collision_contact_steps": 0,
+      "collision_pairs": [],
+      "out_of_bounds_count": 4,
+      "rate_limited_count": 133,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "hammer_pose": [
+          0.6399999856948853,
+          0.0,
+          0.9430000185966492,
+          0.07199999690055847,
+          0.703000009059906,
+          0.703000009059906,
+          0.07500000298023224
+        ],
+        "block_pose": [
+          0.5652616620063782,
+          0.1399593949317932,
+          0.9200000166893005,
+          0.21396328508853912,
+          0.21396328508853912,
+          0.6739582419395447,
+          0.6739582419395447
+        ]
+      },
+      "task_info": {
+        "success": false
+      }
+    },
+    {
+      "seed": 8,
+      "success": false,
+      "episode_steps": 200,
+      "duration_seconds": 13.333333333333334,
+      "timed_out": true,
+      "failure_reason": "timeout",
+      "collision": false,
+      "collision_event_count": 0,
+      "collision_contact_steps": 0,
+      "collision_pairs": [],
+      "out_of_bounds_count": 0,
+      "rate_limited_count": 140,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "hammer_pose": [
+          0.6399999856948853,
+          0.0,
+          0.9430000185966492,
+          0.07199999690055847,
+          0.703000009059906,
+          0.703000009059906,
+          0.07500000298023224
+        ],
+        "block_pose": [
+          0.7246859073638916,
+          0.23427033424377441,
+          0.9200000166893005,
+          0.6142979860305786,
+          0.6142979860305786,
+          0.35019704699516296,
+          0.35019704699516296
+        ]
+      },
+      "task_info": {
+        "success": false
+      }
+    },
+    {
+      "seed": 9,
+      "success": false,
+      "episode_steps": 200,
+      "duration_seconds": 13.333333333333334,
+      "timed_out": true,
+      "failure_reason": "joint_limit_clipping",
+      "collision": false,
+      "collision_event_count": 0,
+      "collision_contact_steps": 0,
+      "collision_pairs": [],
+      "out_of_bounds_count": 14,
+      "rate_limited_count": 115,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "hammer_pose": [
+          0.6399999856948853,
+          0.0,
+          0.9430000185966492,
+          0.07199999690055847,
+          0.703000009059906,
+          0.703000009059906,
+          0.07500000298023224
+        ],
+        "block_pose": [
+          0.6337016224861145,
+          -0.1259494125843048,
+          0.9200000166893005,
+          0.6360419392585754,
+          0.6360419392585754,
+          0.30895090103149414,
+          0.30895090103149414
+        ]
+      },
+      "task_info": {
+        "success": false
+      }
+    }
+  ]
+}

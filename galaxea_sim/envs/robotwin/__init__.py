@@ -1,3 +1,19 @@
+"""RoboTwin 任务的 Gymnasium 注册表。
+
+这个文件是“任务名如何映射到具体环境”的关键入口。它做的事情不是实现
+任务逻辑，而是把外部使用的 Gym ID（例如 `R1DualBottlesPickEasy-v0`）
+绑定到：
+
+1. 具体任务模块和环境类（`entry_point`）；
+2. 使用哪一种机器人（R1、R1 Pro 或 R1 Lite）；
+3. 对应机器人的初始关节位置（`robot_kwargs.init_qpos`）；
+4. 是否显示窗口、最大 episode 步数以及其他场景参数。
+
+因此闭环启动参数里的 `--env-name` 最终会沿着 Gym 注册表来到这里。环境创建
+完成后，具体任务文件负责场景物体和成功条件，`RoboTwinBaseEnv` 负责桌面/墙体
+等公共场景，`BimanualManipulationEnv` 负责 step/reset 和控制频率。
+"""
+
 import gymnasium as gym
 from galaxea_sim.robots.r1 import R1Robot
 from galaxea_sim.robots.r1_pro import R1ProRobot
@@ -40,6 +56,12 @@ R1LITE_INIT_QPOS = [
     0, 0,  
 ]
 
+# 从这里开始是 Gym 环境注册。每个注册项都是一个“任务配置”：
+#
+#   Gym ID -> 具体任务环境类 -> 机器人型号/初始姿态/episode 上限
+#
+# 同一个任务入口可以注册多次，只要更换机器人型号或初始关节姿态即可；这也是
+# R1、R1 Pro、R1 Lite 共享任务代码的原因。
 gym.register(
     id='R1DualBottlesPickEasy-v0',
     entry_point='galaxea_sim.envs.robotwin.dual_bottles_pick_easy:DualBottlesPickEasyEnv',

@@ -1,0 +1,73 @@
+{
+  "env_name": "R1DiverseBottlesPick-v0",
+  "seeds": [
+    0
+  ],
+  "episodes": 1,
+  "completed_episodes": 1,
+  "success_count": 0,
+  "success_rate_percent": 0.0,
+  "collision_episode_count": 0,
+  "collision_rate_percent": 0.0,
+  "collision_event_count": 0,
+  "out_of_bounds_count": 0,
+  "out_of_bounds_episode_count": 0,
+  "average_duration_seconds": 1.3333333333333333,
+  "average_episode_steps": 20.0,
+  "max_episode_steps": 20,
+  "control_freq": 15,
+  "execute_horizon": 10,
+  "metric_definitions": {
+    "success": "final task info['success'] is true",
+    "collision": "an episode has an unexpected robot contact with table/wall/ground; bottle contact and wheel-ground contact are excluded",
+    "out_of_bounds_count": "number of control steps whose action was clipped by the joint/gripper safety bounds",
+    "duration": "episode_steps / control_freq; simulation time, not wall-clock inference time"
+  },
+  "episodes_detail": [
+    {
+      "seed": 0,
+      "success": false,
+      "episode_steps": 20,
+      "duration_seconds": 1.3333333333333333,
+      "timed_out": true,
+      "collision": false,
+      "collision_event_count": 0,
+      "collision_contact_steps": 0,
+      "collision_pairs": [],
+      "out_of_bounds_count": 0,
+      "rate_limited_count": 16,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "init_bottle1_pose": [
+          0.6185688972473145,
+          0.2188531458377838,
+          0.9919007420539856,
+          0.6531761288642883,
+          0.6531761288642883,
+          0.2705547511577606,
+          0.2705547511577606
+        ],
+        "init_bottle2_pose": [
+          0.6247127652168274,
+          -0.17312365770339966,
+          1.017885446548462,
+          0.6531761288642883,
+          0.6531761288642883,
+          0.2705547511577606,
+          0.2705547511577606
+        ],
+        "bottle1_id": 8,
+        "bottle2_id": 2
+      },
+      "task_info": {
+        "success": false,
+        "left_success": false,
+        "right_success": false,
+        "left_distance": 0.22686442732810974,
+        "right_distance": 0.18705467879772186,
+        "left_height": 0.9928398728370667,
+        "right_height": 1.0197652578353882
+      }
+    }
+  ]
+}

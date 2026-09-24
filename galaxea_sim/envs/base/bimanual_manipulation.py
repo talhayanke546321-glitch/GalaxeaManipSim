@@ -1,3 +1,10 @@
+"""双臂操作环境的公共实现。
+
+这里是仿真闭环中最重要的“执行器”一层：上层策略给出一个动作后，
+环境先交给控制器拆分/转换，再把各关节目标写入 SAPIEN，推进若干底层
+物理步，最后重新收集状态、图像、奖励和终止信息。
+"""
+
 from typing import Literal
 
 import numpy as np
@@ -11,6 +18,8 @@ from galaxea_sim.utils.gym_utils import get_observation_space_from_example
 from galaxea_sim.robots.bimanual import BimanualRobot
 
 class BimanualManipulationEnv(SapienEnv):
+    """支持双臂、双夹爪和多种控制器的 Gym 环境基类。"""
+
     def __init__(
         self,
         robot_class: type[BimanualRobot],
@@ -21,10 +30,26 @@ class BimanualManipulationEnv(SapienEnv):
         headless: bool = True,
         obs_mode: Literal["state", "image"] = "image",  
         ray_tracing: bool = False,
+        include_depth: bool = True,
+        camera_resolution_scale: int | None = None,
     ):
+        """创建机器人、控制器、动作空间和观测空间。
+
+        ``controller_type`` 决定动作的语义：
+
+        * ``bimanual_joint_position``：动作是双臂关节位置和夹爪位置；
+        * ``bimanual_ee_pose``：动作是双臂末端位姿和夹爪位置；
+        * ``bimanual_relaxed_ik``：动作先经过 Relaxed IK 再变成关节目标。
+
+        OpenPI R1 闭环只允许第一种控制器，因为它要求固定的 14 维动作
+        顺序。其它控制器仍可用于原始专家数据和传统评测。
+        """
         self.eval_mode = False
         self.robot_name = robot_class.name
-        super().__init__(control_freq, timestep, headless, ray_tracing)
+        super().__init__(control_freq, timestep, headless, ray_tracing, include_depth)
+        robot_kwargs = dict(robot_kwargs)
+        if camera_resolution_scale is not None:
+            robot_kwargs["camera_resolution_scale"] = camera_resolution_scale
         self.robot: BimanualRobot = robot_class(self._scene, **robot_kwargs)
         self._init_controller(controller_type)
         self._init_buffers()
@@ -33,6 +58,11 @@ class BimanualManipulationEnv(SapienEnv):
         self.observation_space = get_observation_space_from_example(self._get_obs())
         
     def eval(self):
+        """切换到评测模式。
+
+        任务子类可以读取 ``eval_mode``，决定是否固定随机性或改变任务
+        的可视化行为；基础环境本身不强制使用这个标志。
+        """
         self.eval_mode = True
         
     def _build_world(self):
@@ -83,6 +113,11 @@ class BimanualManipulationEnv(SapienEnv):
         return self.robot.right_ee_link_name
 
     def _init_buffers(self):
+        """清空上一帧动作缓存。
+
+        这些缓存会被写入下一次观测的 ``upper_body_action_dict``，因此它们
+        也是专家数据记录器保存 action 的来源。
+        """
         self.last_gripper_cmd = [0, 0]
         self.left_arm_joint_position_cmd = np.zeros(len(self.left_arm_joint_indices))
         self.right_arm_joint_position_cmd = np.zeros(len(self.right_arm_joint_indices))
@@ -90,6 +125,7 @@ class BimanualManipulationEnv(SapienEnv):
         self.right_arm_gripper_position_cmd = 0.
             
     def _init_controller(self, controller_type):
+        """根据名称实例化控制器，并保存控制器类型。"""
         self.controller_type = controller_type
         if controller_type == "bimanual_joint_position":
             self.controller = BimanualJointPositionController(self.robot)
@@ -101,6 +137,7 @@ class BimanualManipulationEnv(SapienEnv):
             raise ValueError(f"Invalid controller type. Got: {controller_type}")    
         
     def _setup_viewer(self):
+        """创建 SAPIEN viewer 并设置默认视角。"""
         self.engine = sapien.Engine()
         self.renderer = sapien.SapienRenderer()
         self.engine.set_renderer(self.renderer)
@@ -111,6 +148,18 @@ class BimanualManipulationEnv(SapienEnv):
         self.viewer.set_camera_rpy(r=0, p=-0.4, y=2.7)
 
     def step(self, action):
+        """执行一个控制周期。
+
+        执行顺序必须保持稳定：
+
+        1. 控制器把上层 action 拆成左臂、右臂和两个夹爪的目标；
+        2. 没有被控制器管理的关节回到 ``init_qpos`` 目标；
+        3. 将目标写入 SAPIEN 的 drive；
+        4. 在一个控制周期内推进 ``decimation`` 个物理步；
+        5. 采集动作之后的 observation，并计算 reward/termination/info。
+
+        这也是闭环中 ``action_t -> state_{t+1}`` 的边界。
+        """
         left_arm_action, left_gripper_action, right_arm_action, right_gripper_action = self.controller.get_control_signal(action)
         self.left_arm_joint_position_cmd = left_arm_action
         self.right_arm_joint_position_cmd = right_arm_action
@@ -145,28 +194,60 @@ class BimanualManipulationEnv(SapienEnv):
         return obs, reward, terminated, truncated, info
     
     def _get_info(self):
+        """返回任务相关的诊断信息；由具体任务覆盖。"""
         return {}
     
     def _get_reset_info(self):
+        """返回本次 reset 产生的初始物体状态；由具体任务覆盖。"""
         return {}
     
     def _check_truncation(self):
+        """判断是否因时间上限等外部原因截断 episode。"""
         return False
     
     def _check_termination(self) -> bool:
+        """判断任务是否已经成功或失败结束；由具体任务覆盖。"""
         return False
 
     def reset(self, *, seed=None, options=None):
+        """重置机器人、控制器和任务世界，并返回初始观测。
+
+        除 Gym 自己的随机数生成器外，这里还同步设置 legacy
+        ``numpy.random``，因为现有 RoboTwin 任务的物体随机化代码仍然
+        使用全局 NumPy RNG。这样同一个 seed 才能更可靠地复现任务初始状态。
+        """
+        super().reset(seed=seed)
+        # RoboTwin task implementations currently draw from the legacy global
+        # NumPy RNG. Seed it as a compatibility bridge so Gym's reset(seed=...)
+        # contract is honored until those tasks accept an explicit generator.
+        if seed is not None:
+            np.random.seed(seed)
+
         self.robot.set_qpos(self.init_qpos)
+        self.robot.set_qvel(np.zeros(self.num_dofs, dtype=np.float32))
+        self.robot.set_qf(np.zeros(self.num_dofs, dtype=np.float32))
+        for joint, target in zip(self.active_joints, self.init_qpos):
+            joint.set_drive_target(target)
+
+        self._init_buffers()
         self.controller.reset()
-        self.reset_world()
+        reset_info = None if options is None else options.get("reset_info")
+        self.reset_world(reset_info=reset_info)
         self._scene.update_render()
         return self._get_obs(), self._get_reset_info()
 
     def reset_world(self, reset_info=None):
+        """由任务类重新摆放任务物体。"""
         pass
 
     def _get_obs(self):
+        """构造统一的双臂观测字典。
+
+        原始观测保留了较丰富的字段，包括关节速度、末端位姿、动作缓存、
+        物体状态和语言指令。OpenPI 适配器只从这里挑选三路 RGB、14 维
+        状态和 ``language_instruction``，不会把 privileged 的
+        ``object_dict`` 发送给策略。
+        """
         qpos = self.robot.get_qpos()
         qvel = self.robot.get_qvel()
         left_arm_ee_pose = self.robot.left_ee_pose_wrt_control_frame
@@ -223,16 +304,20 @@ class BimanualManipulationEnv(SapienEnv):
         )
         
     def get_object_dict(self):
+        """返回任务物体的真值状态；默认没有物体。"""
         return {}
         
     @property
     def language_instruction(self) -> str:
+        """返回给语言条件策略的任务指令；由具体任务覆盖。"""
         return ""
 
     def _get_reward(self):
+        """计算当前控制周期奖励；基础实现为零奖励。"""
         return 0.
     
     def solution(self):
+        """生成专家规划器使用的高层子任务序列。"""
         substeps = []
         for substep in substeps:
             yield substep

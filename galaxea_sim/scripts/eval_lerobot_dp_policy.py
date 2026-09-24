@@ -7,12 +7,10 @@ import torch
 import tyro
 import cv2
 
-from lerobot.common.policies.diffusion.modeling_diffusion import DiffusionPolicy
-from lerobot.common.datasets.lerobot_dataset import LeRobotDatasetMetadata
+from lerobot.policies.diffusion.modeling_diffusion import DiffusionPolicy
+from lerobot.datasets.lerobot_dataset import LeRobotDatasetMetadata
 
 from galaxea_sim.utils.data_utils import save_dict_list_to_json
-
-import numpy as np
 
 def evaluate(
     task: str,
@@ -38,11 +36,13 @@ def evaluate(
 
         policy.reset()
         numpy_observation, info = env.reset(seed=42)
-        if save_video: env.render()
+        if save_video:
+            env.render()
 
         rewards = []
         frames = []
-        if save_video: frames.append(env.render())
+        if save_video:
+            frames.append(env.render())
 
         step = 0
         done = False
@@ -79,7 +79,8 @@ def evaluate(
 
             numpy_observation, reward, terminated, truncated, info = env.step(action.squeeze(0).cpu().numpy())
             rewards.append(reward)
-            if save_video: frames.append(env.render())
+            if save_video:
+                frames.append(env.render())
             done = terminated or truncated or done
             step += 1
 

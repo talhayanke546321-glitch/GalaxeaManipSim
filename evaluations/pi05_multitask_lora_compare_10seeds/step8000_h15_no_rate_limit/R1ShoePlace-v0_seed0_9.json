@@ -1,0 +1,352 @@
+{
+  "env_name": "R1ShoePlace-v0",
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "episodes": 10,
+  "completed_episodes": 10,
+  "success_count": 3,
+  "success_rate_percent": 30.0,
+  "collision_episode_count": 1,
+  "collision_rate_percent": 10.0,
+  "collision_event_count": 1,
+  "out_of_bounds_count": 658,
+  "out_of_bounds_episode_count": 6,
+  "failure_reason_counts": {
+    "joint_limit_clipping": 5,
+    "success": 3,
+    "timeout": 1,
+    "collision": 1
+  },
+  "average_duration_seconds": 17.06666666666667,
+  "average_episode_steps": 256.0,
+  "max_episode_steps": 300,
+  "control_freq": 15,
+  "execute_horizon": 15,
+  "rate_limit_enabled": false,
+  "max_joint_delta": null,
+  "max_gripper_delta": null,
+  "metric_definitions": {
+    "success": "final task info['success'] is true",
+    "collision": "an episode has an unexpected robot contact with table/wall/ground; bottle contact and wheel-ground contact are excluded",
+    "out_of_bounds_count": "number of control steps whose action was clipped by the joint/gripper safety bounds",
+    "failure_reason": "one per-seed primary reason; success, safety_rejection, collision, joint_limit_clipping, task-specific lift failure, timeout, or missing task info",
+    "duration": "episode_steps / control_freq; simulation time, not wall-clock inference time"
+  },
+  "episodes_detail": [
+    {
+      "seed": 0,
+      "success": false,
+      "episode_steps": 300,
+      "duration_seconds": 20.0,
+      "timed_out": true,
+      "failure_reason": "joint_limit_clipping",
+      "collision": false,
+      "collision_event_count": 0,
+      "collision_contact_steps": 0,
+      "collision_pairs": [],
+      "out_of_bounds_count": 39,
+      "rate_limited_count": 181,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "init_shoe_pose": [
+          0.47964221239089966,
+          0.17213287949562073,
+          0.9627166390419006,
+          0.6519999504089355,
+          0.6519999504089355,
+          -0.27367138862609863,
+          -0.27367138862609863
+        ],
+        "shoe_id": 0
+      },
+      "task_info": {
+        "success": false
+      }
+    },
+    {
+      "seed": 1,
+      "success": false,
+      "episode_steps": 300,
+      "duration_seconds": 20.0,
+      "timed_out": true,
+      "failure_reason": "joint_limit_clipping",
+      "collision": false,
+      "collision_event_count": 0,
+      "collision_contact_steps": 0,
+      "collision_pairs": [],
+      "out_of_bounds_count": 171,
+      "rate_limited_count": 75,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "init_shoe_pose": [
+          0.4998592436313629,
+          0.21627868711948395,
+          0.9440935254096985,
+          -0.03059575892984867,
+          -0.03059575892984867,
+          -0.7064445614814758,
+          -0.7064445614814758
+        ],
+        "shoe_id": 2
+      },
+      "task_info": {
+        "success": false
+      }
+    },
+    {
+      "seed": 2,
+      "success": false,
+      "episode_steps": 300,
+      "duration_seconds": 20.0,
+      "timed_out": true,
+      "failure_reason": "joint_limit_clipping",
+      "collision": false,
+      "collision_event_count": 0,
+      "collision_contact_steps": 0,
+      "collision_pairs": [],
+      "out_of_bounds_count": 92,
+      "rate_limited_count": 184,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "init_shoe_pose": [
+          0.45925408601760864,
+          0.2157704383134842,
+          0.9627166390419006,
+          0.15561047196388245,
+          0.15561047196388245,
+          -0.6897719502449036,
+          -0.6897719502449036
+        ],
+        "shoe_id": 0
+      },
+      "task_info": {
+        "success": false
+      }
+    },
+    {
+      "seed": 3,
+      "success": true,
+      "episode_steps": 169,
+      "duration_seconds": 11.266666666666667,
+      "timed_out": false,
+      "failure_reason": "success",
+      "collision": false,
+      "collision_event_count": 0,
+      "collision_contact_steps": 0,
+      "collision_pairs": [],
+      "out_of_bounds_count": 0,
+      "rate_limited_count": 110,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "init_shoe_pose": [
+          0.4535362422466278,
+          0.16997452080249786,
+          0.9555696249008179,
+          0.39209696650505066,
+          0.39209696650505066,
+          -0.5884385704994202,
+          -0.5884385704994202
+        ],
+        "shoe_id": 4
+      },
+      "task_info": {
+        "success": true
+      }
+    },
+    {
+      "seed": 4,
+      "success": false,
+      "episode_steps": 300,
+      "duration_seconds": 20.0,
+      "timed_out": true,
+      "failure_reason": "timeout",
+      "collision": false,
+      "collision_event_count": 0,
+      "collision_contact_steps": 0,
+      "collision_pairs": [],
+      "out_of_bounds_count": 0,
+      "rate_limited_count": 178,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "init_shoe_pose": [
+          0.49503105878829956,
+          -0.16365233063697815,
+          0.9555696249008179,
+          0.627502977848053,
+          0.627502977848053,
+          -0.32594481110572815,
+          -0.32594481110572815
+        ],
+        "shoe_id": 4
+      },
+      "task_info": {
+        "success": false
+      }
+    },
+    {
+      "seed": 5,
+      "success": true,
+      "episode_steps": 156,
+      "duration_seconds": 10.4,
+      "timed_out": false,
+      "failure_reason": "success",
+      "collision": false,
+      "collision_event_count": 0,
+      "collision_contact_steps": 0,
+      "collision_pairs": [],
+      "out_of_bounds_count": 0,
+      "rate_limited_count": 90,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "init_shoe_pose": [
+          0.4935366213321686,
+          -0.14664041996002197,
+          0.9555696249008179,
+          0.641396164894104,
+          0.641396164894104,
+          -0.29767587780952454,
+          -0.29767587780952454
+        ],
+        "shoe_id": 4
+      },
+      "task_info": {
+        "success": true
+      }
+    },
+    {
+      "seed": 6,
+      "success": false,
+      "episode_steps": 300,
+      "duration_seconds": 20.0,
+      "timed_out": true,
+      "failure_reason": "joint_limit_clipping",
+      "collision": false,
+      "collision_event_count": 0,
+      "collision_contact_steps": 0,
+      "collision_pairs": [],
+      "out_of_bounds_count": 183,
+      "rate_limited_count": 97,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "init_shoe_pose": [
+          0.4973737895488739,
+          -0.14529681205749512,
+          0.9555696249008179,
+          0.523322582244873,
+          0.523322582244873,
+          0.47553494572639465,
+          0.47553494572639465
+        ],
+        "shoe_id": 4
+      },
+      "task_info": {
+        "success": false
+      }
+    },
+    {
+      "seed": 7,
+      "success": false,
+      "episode_steps": 300,
+      "duration_seconds": 20.0,
+      "timed_out": true,
+      "failure_reason": "collision",
+      "collision": true,
+      "collision_event_count": 1,
+      "collision_contact_steps": 27,
+      "collision_pairs": [
+        [
+          "left_gripper_finger_link1",
+          "table"
+        ]
+      ],
+      "out_of_bounds_count": 65,
+      "rate_limited_count": 127,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "init_shoe_pose": [
+          0.4889959394931793,
+          -0.0307953841984272,
+          0.9627166390419006,
+          0.5566430687904358,
+          0.5566430687904358,
+          -0.43606019020080566,
+          -0.43606019020080566
+        ],
+        "shoe_id": 0
+      },
+      "task_info": {
+        "success": false
+      }
+    },
+    {
+      "seed": 8,
+      "success": false,
+      "episode_steps": 300,
+      "duration_seconds": 20.0,
+      "timed_out": true,
+      "failure_reason": "joint_limit_clipping",
+      "collision": false,
+      "collision_event_count": 0,
+      "collision_contact_steps": 0,
+      "collision_pairs": [],
+      "out_of_bounds_count": 108,
+      "rate_limited_count": 129,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "init_shoe_pose": [
+          0.49842703342437744,
+          0.18459726870059967,
+          0.9627166390419006,
+          -0.48137515783309937,
+          -0.48137515783309937,
+          -0.5179555416107178,
+          -0.5179555416107178
+        ],
+        "shoe_id": 0
+      },
+      "task_info": {
+        "success": false
+      }
+    },
+    {
+      "seed": 9,
+      "success": true,
+      "episode_steps": 135,
+      "duration_seconds": 9.0,
+      "timed_out": false,
+      "failure_reason": "success",
+      "collision": false,
+      "collision_event_count": 0,
+      "collision_contact_steps": 0,
+      "collision_pairs": [],
+      "out_of_bounds_count": 0,
+      "rate_limited_count": 48,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "init_shoe_pose": [
+          0.46822303533554077,
+          -0.0004348177753854543,
+          0.9555696249008179,
+          -0.4782385230064392,
+          -0.4782385230064392,
+          -0.5208530426025391,
+          -0.5208530426025391
+        ],
+        "shoe_id": 4
+      },
+      "task_info": {
+        "success": true
+      }
+    }
+  ]
+}

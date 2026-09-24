@@ -1,0 +1,426 @@
+{
+  "env_name": "R1ToolAdjust-v0",
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "episodes": 10,
+  "completed_episodes": 10,
+  "success_count": 9,
+  "success_rate_percent": 90.0,
+  "collision_episode_count": 9,
+  "collision_rate_percent": 90.0,
+  "collision_event_count": 18,
+  "out_of_bounds_count": 0,
+  "out_of_bounds_episode_count": 0,
+  "failure_reason_counts": {
+    "success": 9,
+    "timeout": 1
+  },
+  "average_duration_seconds": 7.859999999999999,
+  "average_episode_steps": 117.9,
+  "max_episode_steps": 150,
+  "control_freq": 15,
+  "execute_horizon": 15,
+  "rate_limit_enabled": false,
+  "max_joint_delta": null,
+  "max_gripper_delta": null,
+  "metric_definitions": {
+    "success": "final task info['success'] is true",
+    "collision": "an episode has an unexpected robot contact with table/wall/ground; bottle contact and wheel-ground contact are excluded",
+    "out_of_bounds_count": "number of control steps whose action was clipped by the joint/gripper safety bounds",
+    "failure_reason": "one per-seed primary reason; success, safety_rejection, collision, joint_limit_clipping, task-specific lift failure, timeout, or missing task info",
+    "duration": "episode_steps / control_freq; simulation time, not wall-clock inference time"
+  },
+  "episodes_detail": [
+    {
+      "seed": 0,
+      "success": true,
+      "episode_steps": 119,
+      "duration_seconds": 7.933333333333334,
+      "timed_out": false,
+      "failure_reason": "success",
+      "collision": true,
+      "collision_event_count": 2,
+      "collision_contact_steps": 16,
+      "collision_pairs": [
+        [
+          "right_gripper_finger_link1",
+          "table"
+        ],
+        [
+          "right_gripper_finger_link2",
+          "table"
+        ]
+      ],
+      "out_of_bounds_count": 0,
+      "rate_limited_count": 63,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "object_pose": [
+          0.5715189576148987,
+          0.0,
+          0.949999988079071,
+          0.0,
+          0.9996980428695679,
+          0.0,
+          0.0
+        ],
+        "object_id": 3
+      },
+      "task_info": {
+        "success": true
+      }
+    },
+    {
+      "seed": 1,
+      "success": true,
+      "episode_steps": 108,
+      "duration_seconds": 7.2,
+      "timed_out": false,
+      "failure_reason": "success",
+      "collision": true,
+      "collision_event_count": 2,
+      "collision_contact_steps": 21,
+      "collision_pairs": [
+        [
+          "right_gripper_finger_link1",
+          "table"
+        ],
+        [
+          "right_gripper_finger_link2",
+          "table"
+        ]
+      ],
+      "out_of_bounds_count": 0,
+      "rate_limited_count": 48,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "object_pose": [
+          0.5720324516296387,
+          0.0,
+          0.949999988079071,
+          0.0,
+          0.7070000171661377,
+          0.0,
+          -0.7070000171661377
+        ],
+        "object_id": 5
+      },
+      "task_info": {
+        "success": true
+      }
+    },
+    {
+      "seed": 2,
+      "success": true,
+      "episode_steps": 111,
+      "duration_seconds": 7.4,
+      "timed_out": false,
+      "failure_reason": "success",
+      "collision": true,
+      "collision_event_count": 2,
+      "collision_contact_steps": 19,
+      "collision_pairs": [
+        [
+          "right_gripper_finger_link1",
+          "table"
+        ],
+        [
+          "right_gripper_finger_link2",
+          "table"
+        ]
+      ],
+      "out_of_bounds_count": 0,
+      "rate_limited_count": 36,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "object_pose": [
+          0.5025926232337952,
+          0.0,
+          0.949999988079071,
+          0.0,
+          0.9996980428695679,
+          0.0,
+          0.0
+        ],
+        "object_id": 3
+      },
+      "task_info": {
+        "success": true
+      }
+    },
+    {
+      "seed": 3,
+      "success": true,
+      "episode_steps": 121,
+      "duration_seconds": 8.066666666666666,
+      "timed_out": false,
+      "failure_reason": "success",
+      "collision": true,
+      "collision_event_count": 2,
+      "collision_contact_steps": 19,
+      "collision_pairs": [
+        [
+          "left_gripper_finger_link1",
+          "table"
+        ],
+        [
+          "left_gripper_finger_link2",
+          "table"
+        ]
+      ],
+      "out_of_bounds_count": 0,
+      "rate_limited_count": 47,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "object_pose": [
+          0.5708147883415222,
+          0.0,
+          0.949999988079071,
+          0.0,
+          0.0,
+          -0.9996980428695679,
+          0.0
+        ],
+        "object_id": 3
+      },
+      "task_info": {
+        "success": true
+      }
+    },
+    {
+      "seed": 4,
+      "success": true,
+      "episode_steps": 123,
+      "duration_seconds": 8.2,
+      "timed_out": false,
+      "failure_reason": "success",
+      "collision": true,
+      "collision_event_count": 2,
+      "collision_contact_steps": 26,
+      "collision_pairs": [
+        [
+          "left_gripper_finger_link1",
+          "table"
+        ],
+        [
+          "left_gripper_finger_link2",
+          "table"
+        ]
+      ],
+      "out_of_bounds_count": 0,
+      "rate_limited_count": 52,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "object_pose": [
+          0.5547232031822205,
+          0.0,
+          0.949999988079071,
+          0.0,
+          0.0,
+          -0.9996980428695679,
+          0.0
+        ],
+        "object_id": 3
+      },
+      "task_info": {
+        "success": true
+      }
+    },
+    {
+      "seed": 5,
+      "success": true,
+      "episode_steps": 108,
+      "duration_seconds": 7.2,
+      "timed_out": false,
+      "failure_reason": "success",
+      "collision": true,
+      "collision_event_count": 2,
+      "collision_contact_steps": 14,
+      "collision_pairs": [
+        [
+          "left_gripper_finger_link1",
+          "table"
+        ],
+        [
+          "left_gripper_finger_link2",
+          "table"
+        ]
+      ],
+      "out_of_bounds_count": 0,
+      "rate_limited_count": 53,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "object_pose": [
+          0.5870732069015503,
+          0.0,
+          0.949999988079071,
+          0.7070000171661377,
+          0.0,
+          0.7070000171661377,
+          0.0
+        ],
+        "object_id": 5
+      },
+      "task_info": {
+        "success": true
+      }
+    },
+    {
+      "seed": 6,
+      "success": false,
+      "episode_steps": 150,
+      "duration_seconds": 10.0,
+      "timed_out": true,
+      "failure_reason": "timeout",
+      "collision": false,
+      "collision_event_count": 0,
+      "collision_contact_steps": 0,
+      "collision_pairs": [],
+      "out_of_bounds_count": 0,
+      "rate_limited_count": 58,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "object_pose": [
+          0.5331979990005493,
+          0.0,
+          0.949999988079071,
+          0.0,
+          0.9996980428695679,
+          0.0,
+          0.0
+        ],
+        "object_id": 3
+      },
+      "task_info": {
+        "success": false
+      }
+    },
+    {
+      "seed": 7,
+      "success": true,
+      "episode_steps": 110,
+      "duration_seconds": 7.333333333333333,
+      "timed_out": false,
+      "failure_reason": "success",
+      "collision": true,
+      "collision_event_count": 2,
+      "collision_contact_steps": 18,
+      "collision_pairs": [
+        [
+          "left_gripper_finger_link1",
+          "table"
+        ],
+        [
+          "left_gripper_finger_link2",
+          "table"
+        ]
+      ],
+      "out_of_bounds_count": 0,
+      "rate_limited_count": 41,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "object_pose": [
+          0.5779919028282166,
+          0.0,
+          0.949999988079071,
+          0.7070000171661377,
+          0.0,
+          0.7070000171661377,
+          0.0
+        ],
+        "object_id": 5
+      },
+      "task_info": {
+        "success": true
+      }
+    },
+    {
+      "seed": 8,
+      "success": true,
+      "episode_steps": 116,
+      "duration_seconds": 7.733333333333333,
+      "timed_out": false,
+      "failure_reason": "success",
+      "collision": true,
+      "collision_event_count": 2,
+      "collision_contact_steps": 19,
+      "collision_pairs": [
+        [
+          "left_gripper_finger_link1",
+          "table"
+        ],
+        [
+          "left_gripper_finger_link2",
+          "table"
+        ]
+      ],
+      "out_of_bounds_count": 0,
+      "rate_limited_count": 64,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "object_pose": [
+          0.5968540906906128,
+          0.0,
+          0.949999988079071,
+          0.7070000171661377,
+          0.0,
+          0.7070000171661377,
+          0.0
+        ],
+        "object_id": 5
+      },
+      "task_info": {
+        "success": true
+      }
+    },
+    {
+      "seed": 9,
+      "success": true,
+      "episode_steps": 113,
+      "duration_seconds": 7.533333333333333,
+      "timed_out": false,
+      "failure_reason": "success",
+      "collision": true,
+      "collision_event_count": 2,
+      "collision_contact_steps": 18,
+      "collision_pairs": [
+        [
+          "left_gripper_finger_link1",
+          "table"
+        ],
+        [
+          "left_gripper_finger_link2",
+          "table"
+        ]
+      ],
+      "out_of_bounds_count": 0,
+      "rate_limited_count": 56,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "object_pose": [
+          0.5501874685287476,
+          0.0,
+          0.949999988079071,
+          0.0,
+          0.0,
+          -0.9996980428695679,
+          0.0
+        ],
+        "object_id": 3
+      },
+      "task_info": {
+        "success": true
+      }
+    }
+  ]
+}

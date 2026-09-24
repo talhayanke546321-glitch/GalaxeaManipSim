@@ -1,133 +1,271 @@
-import datetime
-import uuid
-
 import gymnasium as gym
 import h5py
+import json
 import numpy as np
+import re
+import time
 import tyro
 import tqdm
 from loguru import logger
 from pathlib import Path
 
-import galaxea_sim.envs
+import galaxea_sim.envs  # noqa: F401 - registers the Gym environments
 from galaxea_sim.envs.base.bimanual_manipulation import BimanualManipulationEnv
-from galaxea_sim.utils.data_utils import save_dict_list_to_hdf5, save_dict_list_to_json 
-import json
+from galaxea_sim.utils.data_utils import (
+    PRE_ACTION_RECORDING_CONTRACT,
+    record_observation_action,
+    save_dict_list_to_hdf5,
+    save_dict_list_to_json,
+)
+from galaxea_sim.utils.image_utils import prepare_rgb_image
+
+
+_DEMO_NAME_PATTERN = re.compile(r"demo_(\d+)\.h5$")
+
+
+def _compact_observation_images(observation: dict) -> dict:
+    """Keep replayed episodes on the same 224x224 RGB contract as collection."""
+    upper = observation["upper_body_observations"]
+    for key in ("rgb_head", "rgb_left_hand", "rgb_right_hand"):
+        upper[key] = prepare_rgb_image(upper[key], 224, 224, name=key)
+    return observation
+
+
+def _demo_index(path: Path) -> int | None:
+    match = _DEMO_NAME_PATTERN.fullmatch(path.name)
+    return None if match is None else int(match.group(1))
+
+
+def _read_source_reset_info(h5_path: Path, demo_index: int) -> dict:
+    meta_info_path = h5_path.parent / "meta_info.json"
+    if not meta_info_path.exists():
+        return {}
+    with meta_info_path.open() as file:
+        source_meta_info_list = json.load(file)
+    if not isinstance(source_meta_info_list, list) or demo_index >= len(source_meta_info_list):
+        raise ValueError(
+            f"Source metadata does not contain demo_{demo_index} for {h5_path}"
+        )
+    reset_info = source_meta_info_list[demo_index].get("reset_info", {})
+    return reset_info if isinstance(reset_info, dict) else {}
+
+
+def _read_actions(h5_file: h5py.File, target_controller_type: str) -> np.ndarray:
+    upper = h5_file["upper_body_observations"]
+    commands = h5_file["upper_body_action_dict"]
+    left_ee_pose = upper["left_arm_ee_pose"][()]
+    right_ee_pose = upper["right_arm_ee_pose"][()]
+    left_joint_cmd = commands["left_arm_joint_position_cmd"][()]
+    right_joint_cmd = commands["right_arm_joint_position_cmd"][()]
+    left_gripper_cmd = commands["left_arm_gripper_position_cmd"][()]
+    right_gripper_cmd = commands["right_arm_gripper_position_cmd"][()]
+
+    arrays = {
+        "right_arm_ee_pose": right_ee_pose,
+        "left_arm_joint_position_cmd": left_joint_cmd,
+        "right_arm_joint_position_cmd": right_joint_cmd,
+        "left_arm_gripper_position_cmd": left_gripper_cmd,
+        "right_arm_gripper_position_cmd": right_gripper_cmd,
+    }
+    episode_length = len(left_ee_pose)
+    if episode_length == 0:
+        raise ValueError("Cannot replay an empty episode")
+    for name, array in arrays.items():
+        if len(array) != episode_length:
+            raise ValueError(
+                f"Episode arrays have inconsistent lengths: {name} has {len(array)}, "
+                f"expected {episode_length}"
+            )
+
+    if target_controller_type == "bimanual_joint_position":
+        return np.concatenate(
+            [left_joint_cmd, left_gripper_cmd, right_joint_cmd, right_gripper_cmd],
+            axis=-1,
+        )
+    if target_controller_type in {"bimanual_ee_pose", "bimanual_relaxed_ik"}:
+        return np.concatenate(
+            [left_ee_pose, left_gripper_cmd, right_ee_pose, right_gripper_cmd],
+            axis=-1,
+        )
+    raise ValueError(f"Unknown target controller type: {target_controller_type}")
+
 
 def main(
-    env_name: str, 
-    num_demos: int = 100, 
-    dataset_dir: str = 'datasets', 
-    target_controller_type: str = 'bimanual_relaxed_ik', 
-    control_freq: int = 15, 
-    headless: bool = True, 
-    ray_tracing: bool = False
+    env_name: str,
+    num_demos: int = 100,
+    dataset_dir: str = "datasets",
+    target_controller_type: str = "bimanual_relaxed_ik",
+    control_freq: int = 15,
+    headless: bool = True,
+    realtime: bool = False,
+    ray_tracing: bool = False,
 ):
+    if num_demos < 0:
+        raise ValueError("num_demos must be non-negative")
+    if control_freq <= 0:
+        raise ValueError("control_freq must be positive")
+    if target_controller_type not in {
+        "bimanual_joint_position",
+        "bimanual_ee_pose",
+        "bimanual_relaxed_ik",
+    }:
+        raise ValueError(f"Unknown target controller type: {target_controller_type}")
+
     env = gym.make(
         env_name,
         control_freq=control_freq,
         headless=headless,
         controller_type=target_controller_type,
         ray_tracing=ray_tracing,
+        include_depth=False,
     )
     assert isinstance(env.unwrapped, BimanualManipulationEnv)
     save_dir = Path(dataset_dir) / env_name / "replayed"
     source_dir = Path(dataset_dir) / env_name
-    meta_info_path = Path(source_dir) / "meta_info.json"
-    h5_paths = list(Path(source_dir).glob("*/*.h5")) # except for final in the source_dir
-    h5_paths = [
-        h5_path for h5_path in h5_paths if "final" not in str(h5_path)
-    ]
+    h5_paths = sorted(
+        h5_path
+        for h5_path in source_dir.glob("*/*.h5")
+        if h5_path.parent.name not in {"final", "replayed"}
+    )
     num_collected = 0
     num_tries = 0
-    meta_info_list = []
     logger.info(f"Collecting {num_demos} demos from {len(h5_paths)} h5 files.")
-    # for h5_path in h5_paths:
-    # set pbar for num_collected
-    pbar = tqdm.tqdm(total=num_demos, desc="Collecting demos")
-
-
-    # get existing demo h5
     existing = sorted(save_dir.glob("demo_*.h5"))
-    num_collected = len(existing)
-    pbar = tqdm.tqdm(total=num_demos, initial=num_collected,
-                    desc="Collecting demos")
+    existing_indices = [index for path in existing if (index := _demo_index(path)) is not None]
+    num_collected = len(existing_indices)
+    next_index = max(existing_indices, default=-1) + 1
 
-    # skip h5 that has already been processed
-    processed = {int(p.stem.split("_")[-1]) for p in existing}
-    h5_paths = [p for p in h5_paths
-                if int(p.stem.split("_")[-1]) not in processed]
-    # ----------------------------------------------------
+    meta_info_path = save_dir / "meta_info.json"
+    if meta_info_path.exists():
+        with meta_info_path.open() as file:
+            meta_info_list = json.load(file)
+        if not isinstance(meta_info_list, list):
+            raise ValueError(f"Replay metadata must be a list: {meta_info_path}")
+    else:
+        meta_info_list = []
 
-    for h5_path in h5_paths:
-        # TODO: add a check to ensure the h5 file is not already processed
-        h5_file = h5py.File(h5_path, "r")
-        demo_idx = int(h5_path.stem.split("_")[-1])
+    # Output numbering and source numbering are different namespaces.  They
+    # only happen to match when every source episode replays successfully. If
+    # one episode fails, filtering by output indices would replay successful
+    # source episodes again on resume.  Use the recorded source_demo mapping;
+    # retain the old index-based fallback only for pre-contract output dirs
+    # that have no replay metadata at all.
+    processed_source_indices = {
+        int(item["source_demo"])
+        for item in meta_info_list
+        if isinstance(item, dict) and item.get("source_demo") is not None
+    }
+    if not meta_info_list and existing_indices:
+        processed_source_indices = set(existing_indices)
+    h5_paths = [
+        path
+        for path in h5_paths
+        if (index := _demo_index(path)) is not None and index not in processed_source_indices
+    ]
 
-        meta_info_path = h5_path.parent / "meta_info.json"
-        if meta_info_path.exists():
-            with open(meta_info_path, "r") as f:
-                source_meta_info_list = json.load(f)
-        else:
-            source_meta_info_list = None
-        
-        traj = []
-        info = {}
-        reset_info = source_meta_info_list[demo_idx]["reset_info"] if source_meta_info_list is not None else {}
-        env.reset()
-        env.reset_world(reset_info)
-        # env.render()
-        left_ee_pose = h5_file['upper_body_observations']['left_arm_ee_pose'][()]
-        right_ee_pose = h5_file['upper_body_observations']['right_arm_ee_pose'][()]
-        
-        left_arm_joint_position_cmd = h5_file['upper_body_action_dict']['left_arm_joint_position_cmd'][()]
-        right_arm_joint_position_cmd = h5_file['upper_body_action_dict']['right_arm_joint_position_cmd'][()]
-        left_arm_gripper_position_cmd = h5_file['upper_body_action_dict']['left_arm_gripper_position_cmd'][()]
-        right_arm_gripper_position_cmd = h5_file['upper_body_action_dict']['right_arm_gripper_position_cmd'][()]
-        episode_length = left_ee_pose.shape[0]
-        
-        if target_controller_type == 'bimanual_joint_position':
-            actions = np.concatenate(
-                [left_arm_joint_position_cmd, left_arm_gripper_position_cmd, right_arm_joint_position_cmd, right_arm_gripper_position_cmd],
-                axis=-1
-            ) # type: ignore
-        elif target_controller_type == 'bimanual_ee_pose' or target_controller_type == 'bimanual_relaxed_ik':
-            actions = np.concatenate(
-                [left_ee_pose, left_arm_gripper_position_cmd, right_ee_pose, right_arm_gripper_position_cmd],
-                axis=-1 
-            ) # type: ignore
-        else:
-            raise ValueError(f"Unknown target controller type: {target_controller_type}")
-        
-        for i in range(episode_length):
-            obs, _, _, _, info = env.step(actions[i])
-            traj.append(obs)
-            if not headless:
-                env.render()
-        for i in range(5):
-            obs, _, _, _, info = env.step(actions[-1])
-            traj.append(obs)
-            if not headless:
-                env.render()
-        num_tries += 1
-        if info["success"]:
-            save_dict_list_to_hdf5(
-                traj, save_dir / f"demo_{num_collected}.h5"
-            )
-            num_collected += 1
-            meta_info = dict(reset_info=reset_info, success=info["success"], total_steps=len(traj))
-            meta_info_list.append(meta_info)
-            save_dict_list_to_json(meta_info_list, save_dir / "meta_info.json")
-            # logger.info(f"Collected {num_collected} demos in {num_tries} tries. Success rate: {int(num_collected/num_tries*100)}%")  
-            # tqdm.tqdm.write(f"Collected {num_collected} demos in {num_tries} tries. Success rate: {int(num_collected/num_tries*100)}%")
-            pbar.update(1)
-            pbar.set_postfix_str(f"Collected {num_collected} demos in {num_tries} tries. Success rate: {int(num_collected/num_tries*100)}%")
+    pbar = tqdm.tqdm(
+        total=max(num_demos, num_collected),
+        initial=num_collected,
+        desc="Collecting demos",
+    )
+    try:
+        for h5_path in h5_paths:
             if num_collected >= num_demos:
                 break
+            demo_idx = _demo_index(h5_path)
+            assert demo_idx is not None
+            reset_info = _read_source_reset_info(h5_path, demo_idx)
+
+            with h5py.File(h5_path, "r") as h5_file:
+                actions = _read_actions(h5_file, target_controller_type)
+                if reset_info:
+                    obs, _ = env.reset(options={"reset_info": reset_info})
+                else:
+                    obs, _ = env.reset()
+                if not headless:
+                    env.render()
+                    if realtime:
+                        time.sleep(1 / control_freq)
+
+                traj = []
+                info = {}
+                episode_done = False
+                for action in actions:
+                    recorded_obs = record_observation_action(
+                        obs,
+                        action,
+                        controller_type=target_controller_type,
+                    )
+                    traj.append(_compact_observation_images(recorded_obs))
+                    obs, _, terminated, truncated, info = env.step(action)
+                    if not headless:
+                        env.render()
+                        if realtime:
+                            time.sleep(1 / control_freq)
+                    episode_done = bool(terminated or truncated)
+                    if episode_done:
+                        break
+                if not episode_done:
+                    for _ in range(5):
+                        recorded_obs = record_observation_action(
+                            obs,
+                            actions[-1],
+                            controller_type=target_controller_type,
+                        )
+                        traj.append(_compact_observation_images(recorded_obs))
+                        obs, _, terminated, truncated, info = env.step(actions[-1])
+                        if not headless:
+                            env.render()
+                            if realtime:
+                                time.sleep(1 / control_freq)
+                        if terminated or truncated:
+                            break
+
+            num_tries += 1
+            if info.get("success", False):
+                output_index = next_index
+                save_dict_list_to_hdf5(
+                    traj,
+                    save_dir / f"demo_{output_index}.h5",
+                    metadata={
+                        "recording_contract": PRE_ACTION_RECORDING_CONTRACT,
+                        "controller_type": target_controller_type,
+                        "control_freq": int(control_freq),
+                        "camera_resolution_scale": int(
+                            getattr(env.unwrapped.robot, "camera_resolution_scale", 1)
+                        ),
+                    },
+                )
+                next_index += 1
+                num_collected += 1
+                meta_info_list.append(
+                    dict(
+                        source_demo=demo_idx,
+                        reset_info=reset_info,
+                        success=info["success"],
+                        total_steps=len(traj),
+                        num_collected=num_collected,
+                    )
+                )
+                save_dict_list_to_json(meta_info_list, meta_info_path)
+                pbar.update(1)
+                success_rate = int(num_collected / num_tries * 100) if num_tries else 0
+                pbar.set_postfix_str(
+                    f"Collected {num_collected} demos in {num_tries} tries. "
+                    f"Success rate: {success_rate}%"
+                )
+
+    finally:
+        pbar.close()
+        env.close()
 
     if num_collected < num_demos:
-        logger.warning(f"Collected {num_collected} demos in {num_tries} tries. Success rate: {int(num_collected/num_tries*100)}%")
-        logger.warning(f"Failed to collect {num_demos - num_collected} demos.")      
+        success_rate = int(num_collected / num_tries * 100) if num_tries else 0
+        logger.warning(
+            f"Collected {num_collected} demos in {num_tries} tries. "
+            f"Success rate: {success_rate}%"
+        )
+        logger.warning(f"Failed to collect {num_demos - num_collected} demos.")
 
 if __name__ == "__main__":
     tyro.cli(main)

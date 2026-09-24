@@ -1,0 +1,420 @@
+{
+  "env_name": "R1PutAppleCabinet-v0",
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "episodes": 10,
+  "completed_episodes": 10,
+  "success_count": 10,
+  "success_rate_percent": 100.0,
+  "collision_episode_count": 10,
+  "collision_rate_percent": 100.0,
+  "collision_event_count": 20,
+  "out_of_bounds_count": 144,
+  "out_of_bounds_episode_count": 8,
+  "failure_reason_counts": {
+    "success": 10
+  },
+  "average_duration_seconds": 11.48,
+  "average_episode_steps": 172.2,
+  "max_episode_steps": 400,
+  "control_freq": 15,
+  "execute_horizon": 15,
+  "rate_limit_enabled": false,
+  "max_joint_delta": null,
+  "max_gripper_delta": null,
+  "metric_definitions": {
+    "success": "final task info['success'] is true",
+    "collision": "an episode has an unexpected robot contact with table/wall/ground; bottle contact and wheel-ground contact are excluded",
+    "out_of_bounds_count": "number of control steps whose action was clipped by the joint/gripper safety bounds",
+    "failure_reason": "one per-seed primary reason; success, safety_rejection, collision, joint_limit_clipping, task-specific lift failure, timeout, or missing task info",
+    "duration": "episode_steps / control_freq; simulation time, not wall-clock inference time"
+  },
+  "episodes_detail": [
+    {
+      "seed": 0,
+      "success": true,
+      "episode_steps": 172,
+      "duration_seconds": 11.466666666666667,
+      "timed_out": false,
+      "failure_reason": "success",
+      "collision": true,
+      "collision_event_count": 3,
+      "collision_contact_steps": 12,
+      "collision_pairs": [
+        [
+          "right_gripper_finger_link1",
+          "table"
+        ],
+        [
+          "right_gripper_finger_link2",
+          "table"
+        ]
+      ],
+      "out_of_bounds_count": 16,
+      "rate_limited_count": 81,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "init_apple_pose": [
+          0.5548813343048096,
+          -0.23417727649211884,
+          0.9399999976158142,
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "task_info": {
+        "success": true
+      }
+    },
+    {
+      "seed": 1,
+      "success": true,
+      "episode_steps": 173,
+      "duration_seconds": 11.533333333333333,
+      "timed_out": false,
+      "failure_reason": "success",
+      "collision": true,
+      "collision_event_count": 2,
+      "collision_contact_steps": 17,
+      "collision_pairs": [
+        [
+          "right_gripper_finger_link1",
+          "table"
+        ],
+        [
+          "right_gripper_finger_link2",
+          "table"
+        ]
+      ],
+      "out_of_bounds_count": 26,
+      "rate_limited_count": 79,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "init_apple_pose": [
+          0.5417022109031677,
+          -0.23356105387210846,
+          0.9399999976158142,
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "task_info": {
+        "success": true
+      }
+    },
+    {
+      "seed": 2,
+      "success": true,
+      "episode_steps": 168,
+      "duration_seconds": 11.2,
+      "timed_out": false,
+      "failure_reason": "success",
+      "collision": true,
+      "collision_event_count": 2,
+      "collision_contact_steps": 15,
+      "collision_pairs": [
+        [
+          "right_gripper_finger_link1",
+          "table"
+        ],
+        [
+          "right_gripper_finger_link2",
+          "table"
+        ]
+      ],
+      "out_of_bounds_count": 15,
+      "rate_limited_count": 82,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "init_apple_pose": [
+          0.5435994863510132,
+          -0.31688883900642395,
+          0.9399999976158142,
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "task_info": {
+        "success": true
+      }
+    },
+    {
+      "seed": 3,
+      "success": true,
+      "episode_steps": 173,
+      "duration_seconds": 11.533333333333333,
+      "timed_out": false,
+      "failure_reason": "success",
+      "collision": true,
+      "collision_event_count": 2,
+      "collision_contact_steps": 16,
+      "collision_pairs": [
+        [
+          "right_gripper_finger_link1",
+          "table"
+        ],
+        [
+          "right_gripper_finger_link2",
+          "table"
+        ]
+      ],
+      "out_of_bounds_count": 40,
+      "rate_limited_count": 84,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "init_apple_pose": [
+          0.5550797581672668,
+          -0.23502226173877716,
+          0.9399999976158142,
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "task_info": {
+        "success": true
+      }
+    },
+    {
+      "seed": 4,
+      "success": true,
+      "episode_steps": 166,
+      "duration_seconds": 11.066666666666666,
+      "timed_out": false,
+      "failure_reason": "success",
+      "collision": true,
+      "collision_event_count": 2,
+      "collision_contact_steps": 15,
+      "collision_pairs": [
+        [
+          "right_gripper_finger_link1",
+          "table"
+        ],
+        [
+          "right_gripper_finger_link2",
+          "table"
+        ]
+      ],
+      "out_of_bounds_count": 6,
+      "rate_limited_count": 79,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "init_apple_pose": [
+          0.5967029929161072,
+          -0.25433212518692017,
+          0.9399999976158142,
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "task_info": {
+        "success": true
+      }
+    },
+    {
+      "seed": 5,
+      "success": true,
+      "episode_steps": 177,
+      "duration_seconds": 11.8,
+      "timed_out": false,
+      "failure_reason": "success",
+      "collision": true,
+      "collision_event_count": 2,
+      "collision_contact_steps": 17,
+      "collision_pairs": [
+        [
+          "right_gripper_finger_link1",
+          "table"
+        ],
+        [
+          "right_gripper_finger_link2",
+          "table"
+        ]
+      ],
+      "out_of_bounds_count": 0,
+      "rate_limited_count": 78,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "init_apple_pose": [
+          0.5221993327140808,
+          -0.21551212668418884,
+          0.9399999976158142,
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "task_info": {
+        "success": true
+      }
+    },
+    {
+      "seed": 6,
+      "success": true,
+      "episode_steps": 164,
+      "duration_seconds": 10.933333333333334,
+      "timed_out": false,
+      "failure_reason": "success",
+      "collision": true,
+      "collision_event_count": 1,
+      "collision_contact_steps": 3,
+      "collision_pairs": [
+        [
+          "right_gripper_finger_link1",
+          "table"
+        ]
+      ],
+      "out_of_bounds_count": 0,
+      "rate_limited_count": 66,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "init_apple_pose": [
+          0.5892860293388367,
+          -0.28016242384910583,
+          0.9399999976158142,
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "task_info": {
+        "success": true
+      }
+    },
+    {
+      "seed": 7,
+      "success": true,
+      "episode_steps": 180,
+      "duration_seconds": 12.0,
+      "timed_out": false,
+      "failure_reason": "success",
+      "collision": true,
+      "collision_event_count": 2,
+      "collision_contact_steps": 18,
+      "collision_pairs": [
+        [
+          "right_gripper_finger_link1",
+          "table"
+        ],
+        [
+          "right_gripper_finger_link2",
+          "table"
+        ]
+      ],
+      "out_of_bounds_count": 5,
+      "rate_limited_count": 84,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "init_apple_pose": [
+          0.5076308250427246,
+          -0.22640974819660187,
+          0.9399999976158142,
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "task_info": {
+        "success": true
+      }
+    },
+    {
+      "seed": 8,
+      "success": true,
+      "episode_steps": 172,
+      "duration_seconds": 11.466666666666667,
+      "timed_out": false,
+      "failure_reason": "success",
+      "collision": true,
+      "collision_event_count": 2,
+      "collision_contact_steps": 16,
+      "collision_pairs": [
+        [
+          "right_gripper_finger_link1",
+          "table"
+        ],
+        [
+          "right_gripper_finger_link2",
+          "table"
+        ]
+      ],
+      "out_of_bounds_count": 26,
+      "rate_limited_count": 66,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "init_apple_pose": [
+          0.5873429179191589,
+          -0.20377512276172638,
+          0.9399999976158142,
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "task_info": {
+        "success": true
+      }
+    },
+    {
+      "seed": 9,
+      "success": true,
+      "episode_steps": 177,
+      "duration_seconds": 11.8,
+      "timed_out": false,
+      "failure_reason": "success",
+      "collision": true,
+      "collision_event_count": 2,
+      "collision_contact_steps": 16,
+      "collision_pairs": [
+        [
+          "right_gripper_finger_link1",
+          "table"
+        ],
+        [
+          "right_gripper_finger_link2",
+          "table"
+        ]
+      ],
+      "out_of_bounds_count": 10,
+      "rate_limited_count": 107,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "init_apple_pose": [
+          0.5010374188423157,
+          -0.2597750425338745,
+          0.9399999976158142,
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "task_info": {
+        "success": true
+      }
+    }
+  ]
+}

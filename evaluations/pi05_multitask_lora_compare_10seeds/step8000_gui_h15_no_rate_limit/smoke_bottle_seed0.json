@@ -1,0 +1,81 @@
+{
+  "env_name": "R1DiverseBottlesPick-v0",
+  "seeds": [
+    0
+  ],
+  "episodes": 1,
+  "completed_episodes": 1,
+  "success_count": 1,
+  "success_rate_percent": 100.0,
+  "collision_episode_count": 0,
+  "collision_rate_percent": 0.0,
+  "collision_event_count": 0,
+  "out_of_bounds_count": 0,
+  "out_of_bounds_episode_count": 0,
+  "failure_reason_counts": {
+    "success": 1
+  },
+  "average_duration_seconds": 7.733333333333333,
+  "average_episode_steps": 116.0,
+  "max_episode_steps": 200,
+  "control_freq": 15,
+  "execute_horizon": 15,
+  "rate_limit_enabled": false,
+  "max_joint_delta": null,
+  "max_gripper_delta": null,
+  "metric_definitions": {
+    "success": "final task info['success'] is true",
+    "collision": "an episode has an unexpected robot contact with table/wall/ground; bottle contact and wheel-ground contact are excluded",
+    "out_of_bounds_count": "number of control steps whose action was clipped by the joint/gripper safety bounds",
+    "failure_reason": "one per-seed primary reason; success, safety_rejection, collision, joint_limit_clipping, task-specific lift failure, timeout, or missing task info",
+    "duration": "episode_steps / control_freq; simulation time, not wall-clock inference time"
+  },
+  "episodes_detail": [
+    {
+      "seed": 0,
+      "success": true,
+      "episode_steps": 116,
+      "duration_seconds": 7.733333333333333,
+      "timed_out": false,
+      "failure_reason": "success",
+      "collision": false,
+      "collision_event_count": 0,
+      "collision_contact_steps": 0,
+      "collision_pairs": [],
+      "out_of_bounds_count": 0,
+      "rate_limited_count": 45,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "init_bottle1_pose": [
+          0.6185688972473145,
+          0.2188531458377838,
+          0.9919007420539856,
+          0.6531761288642883,
+          0.6531761288642883,
+          0.2705547511577606,
+          0.2705547511577606
+        ],
+        "init_bottle2_pose": [
+          0.6247127652168274,
+          -0.17312365770339966,
+          1.017885446548462,
+          0.6531761288642883,
+          0.6531761288642883,
+          0.2705547511577606,
+          0.2705547511577606
+        ],
+        "bottle1_id": 8,
+        "bottle2_id": 2
+      },
+      "task_info": {
+        "success": true,
+        "left_success": true,
+        "right_success": true,
+        "left_distance": 0.09454236924648285,
+        "right_distance": 0.09577228128910065,
+        "left_height": 1.1209238767623901,
+        "right_height": 1.1159932613372803
+      }
+    }
+  ]
+}

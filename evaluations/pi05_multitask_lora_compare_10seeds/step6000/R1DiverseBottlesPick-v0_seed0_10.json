@@ -1,0 +1,521 @@
+{
+  "env_name": "R1DiverseBottlesPick-v0",
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "episodes": 10,
+  "completed_episodes": 10,
+  "success_count": 1,
+  "success_rate_percent": 10.0,
+  "collision_episode_count": 2,
+  "collision_rate_percent": 20.0,
+  "collision_event_count": 4,
+  "out_of_bounds_count": 0,
+  "out_of_bounds_episode_count": 0,
+  "failure_reason_counts": {
+    "success": 1,
+    "left_and_right_lift_failed": 8,
+    "collision": 1
+  },
+  "average_duration_seconds": 12.940000000000001,
+  "average_episode_steps": 194.1,
+  "max_episode_steps": 200,
+  "control_freq": 15,
+  "execute_horizon": 10,
+  "metric_definitions": {
+    "success": "final task info['success'] is true",
+    "collision": "an episode has an unexpected robot contact with table/wall/ground; bottle contact and wheel-ground contact are excluded",
+    "out_of_bounds_count": "number of control steps whose action was clipped by the joint/gripper safety bounds",
+    "failure_reason": "one per-seed primary reason; success, safety_rejection, collision, joint_limit_clipping, task-specific lift failure, timeout, or missing task info",
+    "duration": "episode_steps / control_freq; simulation time, not wall-clock inference time"
+  },
+  "episodes_detail": [
+    {
+      "seed": 0,
+      "success": true,
+      "episode_steps": 141,
+      "duration_seconds": 9.4,
+      "timed_out": false,
+      "failure_reason": "success",
+      "collision": true,
+      "collision_event_count": 2,
+      "collision_contact_steps": 57,
+      "collision_pairs": [
+        [
+          "left_gripper_finger_link1",
+          "table"
+        ],
+        [
+          "left_gripper_finger_link2",
+          "table"
+        ]
+      ],
+      "out_of_bounds_count": 0,
+      "rate_limited_count": 97,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "init_bottle1_pose": [
+          0.6185688972473145,
+          0.2188531458377838,
+          0.9919007420539856,
+          0.6531761288642883,
+          0.6531761288642883,
+          0.2705547511577606,
+          0.2705547511577606
+        ],
+        "init_bottle2_pose": [
+          0.6247127652168274,
+          -0.17312365770339966,
+          1.017885446548462,
+          0.6531761288642883,
+          0.6531761288642883,
+          0.2705547511577606,
+          0.2705547511577606
+        ],
+        "bottle1_id": 8,
+        "bottle2_id": 2
+      },
+      "task_info": {
+        "success": true,
+        "left_success": true,
+        "right_success": true,
+        "left_distance": 0.08709003776311874,
+        "right_distance": 0.09715180844068527,
+        "left_height": 1.1429557800292969,
+        "right_height": 1.1273841857910156
+      }
+    },
+    {
+      "seed": 1,
+      "success": false,
+      "episode_steps": 200,
+      "duration_seconds": 13.333333333333334,
+      "timed_out": true,
+      "failure_reason": "left_and_right_lift_failed",
+      "collision": false,
+      "collision_event_count": 0,
+      "collision_contact_steps": 0,
+      "collision_pairs": [],
+      "out_of_bounds_count": 0,
+      "rate_limited_count": 157,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "init_bottle1_pose": [
+          0.6994369626045227,
+          0.2365114688873291,
+          1.0251758098602295,
+          0.6531761288642883,
+          0.6531761288642883,
+          0.2705547511577606,
+          0.2705547511577606
+        ],
+        "init_bottle2_pose": [
+          0.5293511748313904,
+          -0.2315322756767273,
+          1.0251758098602295,
+          0.6531761288642883,
+          0.6531761288642883,
+          0.2705547511577606,
+          0.2705547511577606
+        ],
+        "bottle1_id": 10,
+        "bottle2_id": 10
+      },
+      "task_info": {
+        "success": false,
+        "left_success": false,
+        "right_success": false,
+        "left_distance": 0.2166527658700943,
+        "right_distance": 0.2622874081134796,
+        "left_height": 1.023585557937622,
+        "right_height": 0.9387308955192566
+      }
+    },
+    {
+      "seed": 2,
+      "success": false,
+      "episode_steps": 200,
+      "duration_seconds": 13.333333333333334,
+      "timed_out": true,
+      "failure_reason": "left_and_right_lift_failed",
+      "collision": false,
+      "collision_event_count": 0,
+      "collision_contact_steps": 0,
+      "collision_pairs": [],
+      "out_of_bounds_count": 0,
+      "rate_limited_count": 162,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "init_bottle1_pose": [
+          0.5370163917541504,
+          0.23630817234516144,
+          1.025236964225769,
+          0.6531761288642883,
+          0.6531761288642883,
+          0.2705547511577606,
+          0.2705547511577606
+        ],
+        "init_bottle2_pose": [
+          0.584073543548584,
+          -0.18393303453922272,
+          1.0253305435180664,
+          0.6531761288642883,
+          0.6531761288642883,
+          0.2705547511577606,
+          0.2705547511577606
+        ],
+        "bottle1_id": 0,
+        "bottle2_id": 6
+      },
+      "task_info": {
+        "success": false,
+        "left_success": false,
+        "right_success": false,
+        "left_distance": 0.19473935663700104,
+        "right_distance": 0.1725563257932663,
+        "left_height": 1.0295343399047852,
+        "right_height": 1.0314689874649048
+      }
+    },
+    {
+      "seed": 3,
+      "success": false,
+      "episode_steps": 200,
+      "duration_seconds": 13.333333333333334,
+      "timed_out": true,
+      "failure_reason": "left_and_right_lift_failed",
+      "collision": false,
+      "collision_event_count": 0,
+      "collision_contact_steps": 0,
+      "collision_pairs": [],
+      "out_of_bounds_count": 0,
+      "rate_limited_count": 161,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "init_bottle1_pose": [
+          0.5141449570655823,
+          0.21798980236053467,
+          1.0186735391616821,
+          0.6531761288642883,
+          0.6531761288642883,
+          0.2705547511577606,
+          0.2705547511577606
+        ],
+        "init_bottle2_pose": [
+          0.678589403629303,
+          -0.07074138522148132,
+          1.0251758098602295,
+          0.6531761288642883,
+          0.6531761288642883,
+          0.2705547511577606,
+          0.2705547511577606
+        ],
+        "bottle1_id": 4,
+        "bottle2_id": 10
+      },
+      "task_info": {
+        "success": false,
+        "left_success": false,
+        "right_success": false,
+        "left_distance": 0.17960797250270844,
+        "right_distance": 0.20494458079338074,
+        "left_height": 1.041079044342041,
+        "right_height": 1.030382752418518
+      }
+    },
+    {
+      "seed": 4,
+      "success": false,
+      "episode_steps": 200,
+      "duration_seconds": 13.333333333333334,
+      "timed_out": true,
+      "failure_reason": "left_and_right_lift_failed",
+      "collision": false,
+      "collision_event_count": 0,
+      "collision_contact_steps": 0,
+      "collision_pairs": [],
+      "out_of_bounds_count": 0,
+      "rate_limited_count": 112,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "init_bottle1_pose": [
+          0.6801242828369141,
+          0.08453906327486038,
+          1.0186735391616821,
+          0.6531761288642883,
+          0.6531761288642883,
+          0.2705547511577606,
+          0.2705547511577606
+        ],
+        "init_bottle2_pose": [
+          0.639545738697052,
+          -0.20678210258483887,
+          1.025236964225769,
+          0.6531761288642883,
+          0.6531761288642883,
+          0.2705547511577606,
+          0.2705547511577606
+        ],
+        "bottle1_id": 4,
+        "bottle2_id": 0
+      },
+      "task_info": {
+        "success": false,
+        "left_success": false,
+        "right_success": false,
+        "left_distance": 0.37216851115226746,
+        "right_distance": 0.17399662733078003,
+        "left_height": 0.9331284761428833,
+        "right_height": 1.0526994466781616
+      }
+    },
+    {
+      "seed": 5,
+      "success": false,
+      "episode_steps": 200,
+      "duration_seconds": 13.333333333333334,
+      "timed_out": true,
+      "failure_reason": "left_and_right_lift_failed",
+      "collision": false,
+      "collision_event_count": 0,
+      "collision_contact_steps": 0,
+      "collision_pairs": [],
+      "out_of_bounds_count": 0,
+      "rate_limited_count": 150,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "init_bottle1_pose": [
+          0.5110360383987427,
+          0.21626557409763336,
+          1.0253305435180664,
+          0.6531761288642883,
+          0.6531761288642883,
+          0.2705547511577606,
+          0.2705547511577606
+        ],
+        "init_bottle2_pose": [
+          0.5976822376251221,
+          -0.12765122950077057,
+          1.017885446548462,
+          0.6531761288642883,
+          0.6531761288642883,
+          0.2705547511577606,
+          0.2705547511577606
+        ],
+        "bottle1_id": 6,
+        "bottle2_id": 2
+      },
+      "task_info": {
+        "success": false,
+        "left_success": false,
+        "right_success": false,
+        "left_distance": 0.1790260225534439,
+        "right_distance": 0.10890528559684753,
+        "left_height": 1.0311355590820312,
+        "right_height": 1.1018686294555664
+      }
+    },
+    {
+      "seed": 6,
+      "success": false,
+      "episode_steps": 200,
+      "duration_seconds": 13.333333333333334,
+      "timed_out": true,
+      "failure_reason": "left_and_right_lift_failed",
+      "collision": false,
+      "collision_event_count": 0,
+      "collision_contact_steps": 0,
+      "collision_pairs": [],
+      "out_of_bounds_count": 0,
+      "rate_limited_count": 51,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "init_bottle1_pose": [
+          0.6894952058792114,
+          0.09188127517700195,
+          1.0186735391616821,
+          0.6531761288642883,
+          0.6531761288642883,
+          0.2705547511577606,
+          0.2705547511577606
+        ],
+        "init_bottle2_pose": [
+          0.521531343460083,
+          -0.13098958134651184,
+          1.0186735391616821,
+          0.6531761288642883,
+          0.6531761288642883,
+          0.2705547511577606,
+          0.2705547511577606
+        ],
+        "bottle1_id": 4,
+        "bottle2_id": 4
+      },
+      "task_info": {
+        "success": false,
+        "left_success": false,
+        "right_success": false,
+        "left_distance": 0.3416704833507538,
+        "right_distance": 0.23119837045669556,
+        "left_height": 0.9328913688659668,
+        "right_height": 0.991132378578186
+      }
+    },
+    {
+      "seed": 7,
+      "success": false,
+      "episode_steps": 200,
+      "duration_seconds": 13.333333333333334,
+      "timed_out": true,
+      "failure_reason": "collision",
+      "collision": true,
+      "collision_event_count": 2,
+      "collision_contact_steps": 54,
+      "collision_pairs": [
+        [
+          "left_gripper_finger_link1",
+          "table"
+        ],
+        [
+          "left_gripper_finger_link2",
+          "table"
+        ]
+      ],
+      "out_of_bounds_count": 0,
+      "rate_limited_count": 161,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "init_bottle1_pose": [
+          0.6559837460517883,
+          0.13768184185028076,
+          0.9919007420539856,
+          0.6531761288642883,
+          0.6531761288642883,
+          0.2705547511577606,
+          0.2705547511577606
+        ],
+        "init_bottle2_pose": [
+          0.5616025328636169,
+          -0.19722583889961243,
+          0.9919007420539856,
+          0.6531761288642883,
+          0.6531761288642883,
+          0.2705547511577606,
+          0.2705547511577606
+        ],
+        "bottle1_id": 8,
+        "bottle2_id": 8
+      },
+      "task_info": {
+        "success": false,
+        "left_success": false,
+        "right_success": false,
+        "left_distance": 0.12119882553815842,
+        "right_distance": 0.10828884690999985,
+        "left_height": 1.0973483324050903,
+        "right_height": 1.094944953918457
+      }
+    },
+    {
+      "seed": 8,
+      "success": false,
+      "episode_steps": 200,
+      "duration_seconds": 13.333333333333334,
+      "timed_out": true,
+      "failure_reason": "left_and_right_lift_failed",
+      "collision": false,
+      "collision_event_count": 0,
+      "collision_contact_steps": 0,
+      "collision_pairs": [],
+      "out_of_bounds_count": 0,
+      "rate_limited_count": 163,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "init_bottle1_pose": [
+          0.5022228956222534,
+          0.09788791835308075,
+          1.0253305435180664,
+          0.6531761288642883,
+          0.6531761288642883,
+          0.2705547511577606,
+          0.2705547511577606
+        ],
+        "init_bottle2_pose": [
+          0.546545684337616,
+          -0.24772024154663086,
+          1.0253305435180664,
+          0.6531761288642883,
+          0.6531761288642883,
+          0.2705547511577606,
+          0.2705547511577606
+        ],
+        "bottle1_id": 6,
+        "bottle2_id": 6
+      },
+      "task_info": {
+        "success": false,
+        "left_success": false,
+        "right_success": false,
+        "left_distance": 0.18011979758739471,
+        "right_distance": 0.18367919325828552,
+        "left_height": 1.0313911437988281,
+        "right_height": 1.031299114227295
+      }
+    },
+    {
+      "seed": 9,
+      "success": false,
+      "episode_steps": 200,
+      "duration_seconds": 13.333333333333334,
+      "timed_out": true,
+      "failure_reason": "left_and_right_lift_failed",
+      "collision": false,
+      "collision_event_count": 0,
+      "collision_contact_steps": 0,
+      "collision_pairs": [],
+      "out_of_bounds_count": 0,
+      "rate_limited_count": 152,
+      "safety_rejection_count": 0,
+      "reset_info": {
+        "init_bottle1_pose": [
+          0.6003749370574951,
+          0.1491546630859375,
+          0.9919007420539856,
+          0.6531761288642883,
+          0.6531761288642883,
+          0.2705547511577606,
+          0.2705547511577606
+        ],
+        "init_bottle2_pose": [
+          0.5026643872261047,
+          -0.07455576211214066,
+          1.0251758098602295,
+          0.6531761288642883,
+          0.6531761288642883,
+          0.2705547511577606,
+          0.2705547511577606
+        ],
+        "bottle1_id": 8,
+        "bottle2_id": 10
+      },
+      "task_info": {
+        "success": false,
+        "left_success": false,
+        "right_success": false,
+        "left_distance": 0.1597154587507248,
+        "right_distance": 0.3112451732158661,
+        "left_height": 1.1859486103057861,
+        "right_height": 0.9387348294258118
+      }
+    }
+  ]
+}
