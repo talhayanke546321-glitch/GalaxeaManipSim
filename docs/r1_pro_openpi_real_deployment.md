@@ -1,22 +1,24 @@
 # R1 Pro π0.5 real-robot deployment
 
-This deployment keeps model inference on the GPU workstation and runs a small
-ROS2 client beside the R1 Pro SDK.  The checkpoint is simulation-trained and is
-not validated for autonomous real-robot execution.  Always complete preflight
-and shadow review before enabling publishers.
+Both project processes run on the GPU inference workstation: a Python 3.11
+OpenPI model server and a separate Python 3.10 ROS2 client.  The R1 Pro runs
+only Galaxea's stock drivers and motion controllers; this project is not
+installed on the robot.  The checkpoint is simulation-trained and is not
+validated for autonomous real-robot execution.  Always complete preflight and
+shadow review before enabling publishers.
 
 ## Architecture
 
 ```text
-R1 Pro cameras + joint feedback ──ROS2──> real client
-                                             │
-                                      WebSocket/msgpack
-                                             │
-                                      GPU policy server
-                                             │
-                                  15 x 16 absolute actions
-                                             │
-real client: validate → limit → 0..100 gripper conversion ──ROS2──> mobiman
+R1 Pro (stock SDK): cameras + joint feedback
+                  │
+                  │ ROS2 DDS over wired LAN
+                  ▼
+GPU workstation: ROS2 real client ──localhost WebSocket──> OpenPI server
+                  │                                      (10000 checkpoint)
+                  │ validate → limit → gripper conversion
+                  ▼
+R1 Pro (stock SDK): mobiman arm/gripper controllers
 ```
 
 The real client controls only the two seven-joint arms and two grippers.  It
@@ -25,20 +27,21 @@ pose by default because the bottle-place expert uses the right arm.
 
 ## 1. GPU workstation
 
-Start the 10,000-step policy server.  Keep the generated API key available for
-the robot-side shell without placing it in command history or source control.
+Start the 10,000-step policy server.  The ROS2 client runs on this same machine,
+so keep the service bound to loopback and keep the API key out of source
+control.
 
 ```bash
 cd /home/vipuser/robotics/openpi
 export OPENPI_API_KEY="$(openssl rand -hex 32)"
 
 ./.venv/bin/python scripts/serve_galaxea_r1_pro_bottle.py \
-  --host 0.0.0.0 \
+  --host 127.0.0.1 \
   --port 8000
 ```
 
-Allow TCP port 8000 only from the robot LAN/VPN.  Do not expose this WebSocket
-service directly to the public Internet.
+Do not open TCP port 8000 to the robot LAN.  Only the local ROS2 client needs
+this WebSocket endpoint.
 
 After the new GPU is installed and the foreground command has been validated,
 an optional systemd template is available at
@@ -53,32 +56,46 @@ With the server running, verify one authenticated network inference locally:
 ./.venv/bin/python scripts/smoke_test_galaxea_r1_pro_server.py
 ```
 
-## 2. Robot-side Python environment
+## 2. ROS2 client environment on the GPU workstation
 
-The client requires Python 3.10, ROS2 Humble's `rclpy`, and the Galaxea SDK.
-Source ROS before activating/running the client.  Do not `pip install` the full
-simulation project on the robot; use its source tree plus the lightweight
-OpenPI client package.
+OpenPI itself uses Python 3.11, while the ROS2 Humble client must use the system
+Python 3.10 ABI.  Keep them in two separate environments on the inference
+workstation.  The client uses only standard ROS2 `sensor_msgs`; Galaxea's SDK
+is needed only on the robot, not on the workstation.  This project remains off
+the robot-side filesystem.
 
 ```bash
 source /opt/ros/humble/setup.bash
-source /path/to/galaxea-sdk/install/setup.bash
 
-python3 -m venv --system-site-packages ~/venvs/r1pro-openpi
-source ~/venvs/r1pro-openpi/bin/activate
-python -m pip install numpy pillow opencv-python tyro websockets msgpack
-python -m pip install -e /path/to/openpi/packages/openpi-client
+python3 -m venv --system-site-packages ~/venvs/r1pro-ros-client
+source ~/venvs/r1pro-ros-client/bin/activate
+python -m pip install 'numpy<2' pillow opencv-python tyro websockets msgpack
+python -m pip install -e /home/vipuser/robotics/openpi/packages/openpi-client
 
 export GALAXEA_SKIP_SIM_REGISTRATION=1
-export PYTHONPATH=/path/to/GalaxeaManipSim:${PYTHONPATH:-}
-export OPENPI_API_KEY='<same value as the GPU workstation>'
+export PYTHONPATH=/home/vipuser/robotics/GalaxeaManipSim:${PYTHONPATH:-}
+export OPENPI_API_KEY='<same value as the local OpenPI server>'
 ```
 
-Use the launch filenames shipped with the installed SDK version.  The required
-nodes are the HDAS R1 Pro driver, three camera streams, arm joint tracker and
-R1 Pro gripper controller.
+## 3. Robot and ROS2 LAN
 
-## 3. Required ROS2 streams
+Run only the stock HDAS driver, camera drivers, arm joint tracker and gripper
+controller on the R1 Pro.  Do not clone either project repository to the robot.
+The robot and inference workstation must use a unique shared ROS domain and
+must not restrict discovery to localhost:
+
+```bash
+export ROS_LOCALHOST_ONLY=0
+export ROS_DOMAIN_ID=72
+```
+
+Set these values before starting the stock nodes on the robot and before
+starting the client on the workstation.  Use the same `RMW_IMPLEMENTATION` on
+both sides when possible.  Confirm discovery from the inference workstation
+with `ros2 topic list`; use a wired gigabit LAN and permit ROS2 DDS multicast
+and dynamic UDP traffic between the two fixed IP addresses.
+
+## 4. Required ROS2 streams
 
 The client waits for all seven inputs and fails closed if any is missing:
 
@@ -114,13 +131,21 @@ Gripper feedback and commands must use the SDK convention `0=closed,
 100=open`.  The client converts this to and from the checkpoint convention
 `0.00=closed, 0.05=open`.
 
-## 4. Preflight (no policy connection, no publishers)
+## 5. Preflight (no policy connection, no publishers)
 
 `preflight` is the default mode.  It waits for fresh observations, validates
 dimensions/timestamps, converts all three images exactly as training did, and
 writes three PNGs plus `preflight.json` for inspection.
 
 ```bash
+cd /home/vipuser/robotics/GalaxeaManipSim
+source /opt/ros/humble/setup.bash
+source ~/venvs/r1pro-ros-client/bin/activate
+export ROS_LOCALHOST_ONLY=0
+export ROS_DOMAIN_ID=72
+export GALAXEA_SKIP_SIM_REGISTRATION=1
+export PYTHONPATH=$PWD:${PYTHONPATH:-}
+
 python -m galaxea_sim.scripts.run_pi05_r1_pro_real \
   --mode preflight
 ```
@@ -149,12 +174,12 @@ publishing an action.  Move to the verified start pose using Galaxea's normal
 operator workflow; this client deliberately does not implement an automatic
 reset motion.
 
-## 5. Shadow inference (policy connected, no publishers)
+## 6. Shadow inference (policy connected, no publishers)
 
 ```bash
 python -m galaxea_sim.scripts.run_pi05_r1_pro_real \
   --mode shadow \
-  --policy-host <GPU_LAN_IP> \
+  --policy-host 127.0.0.1 \
   --policy-port 8000 \
   --max-steps 300
 ```
@@ -173,7 +198,7 @@ Review at least the following before any powered execution:
 * predicted motion is consistent with the visible bottle and plate;
 * policy latency is below the configured deadline.
 
-## 6. Guarded execution
+## 7. Guarded execution
 
 Execution is intentionally awkward to enable.  It requires both a risk flag
 and an exact confirmation phrase because the checkpoint metadata declares
@@ -186,7 +211,7 @@ range, and start with no bottle in the reachable workspace.
 ```bash
 python -m galaxea_sim.scripts.run_pi05_r1_pro_real \
   --mode execute \
-  --policy-host <GPU_LAN_IP> \
+  --policy-host 127.0.0.1 \
   --policy-port 8000 \
   --max-steps 30 \
   --allow-sim-policy-on-real-robot \
@@ -205,7 +230,7 @@ watchdog supplements rather than replaces the robot's physical emergency stop.
 The inference deadline is applied directly to the WebSocket receive operation,
 so a connected but stalled policy server cannot block the client indefinitely.
 
-## 7. Local tests
+## 8. Local tests
 
 The numerical contract is testable without ROS2:
 
@@ -217,6 +242,6 @@ cd /home/vipuser/robotics/GalaxeaManipSim
 ```
 
 The GPU policy can also be smoke-tested with the existing simulator before a
-robot-side shadow run.  Real ROS topic presence, camera orientation, joint
-ordering and powered motion remain hardware acceptance steps and cannot be
-completed on the workstation alone.
+real-observation shadow run.  ROS topic presence over the LAN, camera
+orientation, joint ordering and powered motion remain hardware acceptance
+steps and require the R1 Pro to be online.

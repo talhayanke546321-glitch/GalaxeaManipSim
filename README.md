@@ -37,6 +37,9 @@ a separate GPU workstation is documented in
 [`docs/r1_pro_openpi_real_deployment.md`](docs/r1_pro_openpi_real_deployment.md).
 It defaults to non-actuating preflight/shadow modes because simulation-trained
 checkpoints are not automatically safe or effective on real hardware.
+The current bottle-task training, checkpoint, evaluation and continuation state
+is recorded in
+[`docs/r1_pro_bottle_handoff_2026-09-28.md`](docs/r1_pro_bottle_handoff_2026-09-28.md).
 
 <p align="center">
   <img src="assets/mosaic.webp" alt="Environment Teaser" width="100%">
