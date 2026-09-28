@@ -141,7 +141,9 @@ class BimanualManipulationEnv(SapienEnv):
         self.engine = sapien.Engine()
         self.renderer = sapien.SapienRenderer()
         self.engine.set_renderer(self.renderer)
-        self.viewer = Viewer(self.renderer)
+        # Keep the native viewer sharp on a 1920x1080 NoMachine desktop while
+        # leaving room for the GNOME shell and window decorations.
+        self.viewer = Viewer(self.renderer, resolutions=(1600, 900))
         self.viewer.plugins[5].show_camera_linesets = False
         self.viewer.set_scene(self._scene)
         self.viewer.set_camera_xyz(x=1.2, y=0.25, z=1.5,)

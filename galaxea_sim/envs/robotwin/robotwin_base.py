@@ -48,6 +48,7 @@ class RoboTwinBaseEnv(BimanualManipulationEnv):
         ray_tracing: bool = False,
         include_depth: bool = True,
         camera_resolution_scale: int | None = None,
+        table_height_override: float | None = None,
     ):
         """保存场景变体并初始化通用双臂操作环境。
 
@@ -56,6 +57,15 @@ class RoboTwinBaseEnv(BimanualManipulationEnv):
         构建入口是 `_build_world`，它会在父类基础设施完成后补上桌面和墙体。
         """
         self.variant_idx = variant_idx
+        if table_height_override is not None:
+            if not 0.70 <= float(table_height_override) <= 1.10:
+                raise ValueError(
+                    "table_height_override must be between 0.70 m and 1.10 m "
+                    f"for the R1/R1 Pro workspace, got {table_height_override!r}"
+                )
+            self._table_height_override = float(table_height_override)
+        else:
+            self._table_height_override = None
         super().__init__(
             robot_class,
             robot_kwargs,
@@ -89,6 +99,8 @@ class RoboTwinBaseEnv(BimanualManipulationEnv):
     @property
     def table_height(self):
         """桌面高度，R1 Lite 与其他机器人型号使用不同高度。"""
+        if self._table_height_override is not None:
+            return self._table_height_override
         if self.robot_name == "r1_lite":
             return 0.7
         else:

@@ -31,6 +31,7 @@ class GalaxeaR1ProSimEnvironment(openpi_environment.Environment):
         max_joint_delta: float = 0.12,
         max_gripper_delta: float = 0.01,
         default_prompt: str | None = None,
+        table_height: float | None = None,
     ) -> None:
         """创建 R1 Pro 任务及观测、动作和安全边界。
 
@@ -49,6 +50,7 @@ class GalaxeaR1ProSimEnvironment(openpi_environment.Environment):
             ray_tracing=ray_tracing,
             include_depth=False,
             camera_resolution_scale=4,
+            table_height_override=table_height,
         )
         self._env = self._gym.unwrapped
         if self._env.action_space.shape != (16,):

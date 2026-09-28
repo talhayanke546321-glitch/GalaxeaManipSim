@@ -25,6 +25,7 @@ from galaxea_sim.scripts.replay_demos import (
     _read_actions,
     _read_source_reset_info,
 )
+from galaxea_sim.utils.render_environment import prepare_render_environment
 from galaxea_sim.utils.sapien_utils import add_camera_to_scene
 
 
@@ -71,11 +72,15 @@ def _display_frames(
     window_scale: int,
     title: str,
     loop: bool,
+    end_pause_seconds: float,
 ) -> None:
     import tkinter as tk
 
     root = tk.Tk()
     root.title(title)
+    root.lift()
+    root.attributes("-topmost", True)
+    root.after(1500, lambda: root.attributes("-topmost", False))
     label = tk.Label(root, borderwidth=0, highlightthickness=0)
     label.pack()
     closed = False
@@ -111,6 +116,11 @@ def _display_frames(
                 else:
                     deadline = time.perf_counter()
             if not loop:
+                end_time = time.perf_counter() + end_pause_seconds
+                while not closed and time.perf_counter() < end_time:
+                    root.update_idletasks()
+                    root.update()
+                    time.sleep(0.02)
                 break
     except tk.TclError:
         pass
@@ -131,6 +141,9 @@ def main(
     window_scale: int = 2,
     max_steps: int | None = None,
     loop: bool = True,
+    table_height: float | None = None,
+    end_pause_seconds: float = 1.0,
+    native_viewer: bool = False,
 ) -> None:
     """Show an expert demo at its original control frequency.
 
@@ -146,6 +159,9 @@ def main(
         window_scale: Integer display scaling applied by Tk.
         max_steps: Optional action limit for a quick check.
         loop: Replay continuously until the window is closed.
+        table_height: Override the HDF5 table_height_m metadata when needed.
+        end_pause_seconds: Keep the final frame visible after one-shot playback.
+        native_viewer: Replay directly in SAPIEN's interactive 3D viewer.
     """
     if control_freq <= 0:
         raise ValueError("control_freq must be positive")
@@ -155,6 +171,12 @@ def main(
         raise ValueError("window_scale must be positive")
     if max_steps is not None and max_steps <= 0:
         raise ValueError("max_steps must be positive when provided")
+    if table_height is not None and not 0.70 <= table_height <= 1.10:
+        raise ValueError("table_height must be between 0.70 and 1.10 meters")
+    if end_pause_seconds < 0:
+        raise ValueError("end_pause_seconds must be non-negative")
+
+    prepare_render_environment(require_display=True)
 
     source_h5 = _find_source_demo(
         dataset_dir, env_name, demo_index, source_subdir
@@ -166,17 +188,21 @@ def main(
 
     with h5py.File(source_h5, "r") as h5_file:
         actions = _read_actions(h5_file, controller_type)
+        recorded_height = h5_file.attrs.get("table_height_m")
+    if table_height is None and recorded_height is not None:
+        table_height = float(recorded_height)
     if max_steps is not None:
         actions = actions[:max_steps]
 
     env = gym.make(
         env_name,
         control_freq=control_freq,
-        headless=True,
+        headless=not native_viewer,
         obs_mode="state",
         controller_type=controller_type,
         ray_tracing=False,
         include_depth=False,
+        table_height_override=table_height,
     )
     assert isinstance(env.unwrapped, BimanualManipulationEnv)
     raw_env = env.unwrapped
@@ -186,6 +212,35 @@ def main(
         env.reset(options={"reset_info": reset_info})
     else:
         env.reset()
+
+    if native_viewer:
+        print(
+            f"Playing {source_h5} in the native SAPIEN viewer; "
+            f"table height={table_height!r} m at {control_freq} Hz."
+        )
+        frame_period = 1.0 / control_freq
+        env.render()
+        for action in actions:
+            started = time.perf_counter()
+            _, _, terminated, truncated, _ = env.step(action)
+            env.render()
+            if raw_env.viewer is not None and raw_env.viewer.closed:
+                break
+            remaining = frame_period - (time.perf_counter() - started)
+            if remaining > 0:
+                time.sleep(remaining)
+            if terminated or truncated:
+                break
+
+        if raw_env.viewer is not None and not raw_env.viewer.closed:
+            pause_deadline = time.perf_counter() + end_pause_seconds
+            while time.perf_counter() < pause_deadline:
+                env.render()
+                if raw_env.viewer.closed:
+                    break
+                time.sleep(0.02)
+        env.close()
+        return
 
     camera_pose = sapien.Pose()
     camera_pose.set_p([1.8, -0.9, 1.0])
@@ -210,14 +265,16 @@ def main(
     env.close()
     print(
         f"Pre-rendered {len(frames)} frames from {source_h5}; "
-        f"playing at {control_freq} Hz."
+        f"table height={table_height!r} m, playing at {control_freq} Hz."
     )
+    height_label = "default" if table_height is None else f"{table_height:.4f} m"
     _display_frames(
         frames,
         control_freq=control_freq,
         window_scale=window_scale,
-        title=f"SAPIEN expert trajectory: {env_name} demo_{demo_index}",
+        title=f"SAPIEN expert: {height_label} / demo_{demo_index}",
         loop=loop,
+        end_pause_seconds=end_pause_seconds,
     )
 
 

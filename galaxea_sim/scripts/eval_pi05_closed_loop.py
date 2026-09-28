@@ -38,6 +38,7 @@ from galaxea_sim.integrations.openpi.contract import (
 )
 from galaxea_sim.integrations.openpi.observation_adapter import GalaxeaObservationAdapter
 from galaxea_sim.integrations.openpi.safety import make_r1_safety_filter
+from galaxea_sim.utils.render_environment import prepare_render_environment
 
 
 STATIC_COLLISION_NAMES = frozenset({"ground", "table", "wall"})
@@ -313,6 +314,7 @@ def _run_episode(
 
 def main(args: Args) -> None:
     """初始化策略客户端和 Gym 环境，运行多 seed 评测并写出 JSON。"""
+    prepare_render_environment(require_display=args.gui)
     if args.num_episodes <= 0:
         raise ValueError("num_episodes must be positive")
     if args.execute_horizon <= 0:

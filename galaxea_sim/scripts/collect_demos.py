@@ -56,6 +56,7 @@ def main(
     seed: Optional[int] = None,
     max_tries: Optional[int] = None,
     store_resized_images: bool = False,
+    table_height: Optional[float] = None,
 ):
     """按任务、数量和 seed 采集成功的专家 episode。"""
     if num_demos < 0:
@@ -66,6 +67,8 @@ def main(
         raise ValueError("--store-resized-images requires --obs-mode=image")
     if max_tries is not None and max_tries < 0:
         raise ValueError("max_tries must be non-negative")
+    if table_height is not None and not 0.70 <= table_height <= 1.10:
+        raise ValueError("table_height must be between 0.70 and 1.10 meters")
 
     # 采集 OpenPI 数据时关闭深度，并让相机分辨率保持与在线推理一致；
     # 非 OpenPI 的旧数据流程仍可通过默认参数保留原始深度行为。
@@ -76,6 +79,7 @@ def main(
         obs_mode=obs_mode,
         ray_tracing=ray_tracing,
         include_depth=False,
+        table_height_override=table_height,
     )
     assert isinstance(env.unwrapped, BimanualManipulationEnv)
     planner = BimanualPlanner(
@@ -158,6 +162,7 @@ def main(
                     "camera_resolution_scale": int(
                         getattr(env.unwrapped.robot, "camera_resolution_scale", 1)
                     ),
+                    "table_height_m": float(env.unwrapped.table_height),
                 },
             )
             next_index += 1

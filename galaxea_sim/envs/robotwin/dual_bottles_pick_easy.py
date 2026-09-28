@@ -13,6 +13,8 @@ from .robotwin_base import RoboTwinBaseEnv
 class DualBottlesPickEasyEnv(RoboTwinBaseEnv):
     @property
     def table_height(self):
+        if self._table_height_override is not None:
+            return self._table_height_override
         return 0.9
     
     @property

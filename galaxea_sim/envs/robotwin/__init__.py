@@ -93,6 +93,21 @@ gym.register(
 )
 
 gym.register(
+    id='R1ProBottlePickPlace-v0',
+    entry_point='galaxea_sim.envs.robotwin.bottle_pick_place:BottlePickPlaceEnv',
+    disable_env_checker=True,
+    order_enforce=False,
+    kwargs=dict(
+        robot_class=R1ProRobot,
+        robot_kwargs=dict(
+            init_qpos=R1PRO_INIT_QPOS
+        ),
+        headless=False,
+    ),
+    max_episode_steps=350,
+)
+
+gym.register(
     id='R1LiteDualBottlesPickEasy-v0',
     entry_point='galaxea_sim.envs.robotwin.dual_bottles_pick_easy:DualBottlesPickEasyEnv',
     disable_env_checker=True,

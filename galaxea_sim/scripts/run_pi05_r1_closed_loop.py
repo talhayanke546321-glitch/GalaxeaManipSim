@@ -37,6 +37,7 @@ from galaxea_sim.integrations.openpi.contract import (
     EXECUTE_ACTION_HORIZON,
     POLICY_ACTION_HORIZON,
 )
+from galaxea_sim.utils.render_environment import prepare_render_environment
 
 
 @dataclasses.dataclass
@@ -55,6 +56,7 @@ class Args:
     max_episode_steps: int | None = None
     control_freq: int = 15
     headless: bool = True
+    gui: bool = False
     ray_tracing: bool = False
 
     policy_host: str = "127.0.0.1"
@@ -73,6 +75,8 @@ class Args:
 
 def main(args: Args) -> None:
     """组装仿真环境、WebSocket 客户端和 Runtime，并启动 episode。"""
+    show_gui = args.gui or not args.headless
+    prepare_render_environment(require_display=show_gui)
     if args.execute_horizon <= 0:
         raise ValueError("execute_horizon must be positive")
     if args.execute_horizon != EXECUTE_ACTION_HORIZON:
@@ -84,7 +88,7 @@ def main(args: Args) -> None:
         env_name=args.env_name,
         seed=args.seed,
         control_freq=args.control_freq,
-        headless=args.headless,
+        headless=not show_gui,
         ray_tracing=args.ray_tracing,
         max_episode_steps=args.max_episode_steps,
         max_joint_delta=args.max_joint_delta,

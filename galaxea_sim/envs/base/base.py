@@ -110,7 +110,8 @@ class SapienEnv(gym.Env):
         的关闭入口，方便上层统一调用 ``env.close()``。
         """
         if self.viewer is not None:
-            pass  # release viewer
+            self.viewer.close()
+            self.viewer = None
         
     def _add_scene_camera(self):
         """添加一个与机器人无关的默认观察相机。
@@ -135,9 +136,10 @@ class SapienEnv(gym.Env):
         if not self.headless:
             if self.viewer is None:
                 self._setup_viewer()
-            else:
-                if not self.viewer.closed:
-                    self.viewer.render()
+            # Viewer construction allocates the native window but does not
+            # submit a frame.  Always render here, including the first call.
+            if not self.viewer.closed:
+                self.viewer.render()
         return rgb_img
 
     # ---------------------------------------------------------------------------- #
