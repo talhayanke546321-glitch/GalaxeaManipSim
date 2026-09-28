@@ -32,6 +32,12 @@ Use it to **collect high-quality demos**, **convert them to [LeRobot](https://gi
 | 🚀 **Baseline DP training** | Drop-in scripts to train / evaluate **Diffusion Policy** models. |
 | 📊 **Metrics & videos** | Built-in evaluation with success-rate logging and optional video export. |
 
+The guarded ROS2 client for running an OpenPI R1 Pro policy with inference on
+a separate GPU workstation is documented in
+[`docs/r1_pro_openpi_real_deployment.md`](docs/r1_pro_openpi_real_deployment.md).
+It defaults to non-actuating preflight/shadow modes because simulation-trained
+checkpoints are not automatically safe or effective on real hardware.
+
 <p align="center">
   <img src="assets/mosaic.webp" alt="Environment Teaser" width="100%">
 </p>
